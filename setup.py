@@ -1,0 +1,18 @@
+from setuptools import find_packages, setup
+
+setup(
+    name='ipaPy2',
+    packages=find_packages(include=['ipaPy2']),
+    version='0.1.0',
+    description='Integrated Probabilistic Annotation (IPA) 2.0 - Python implementation ',
+    author='Dr Francesco Del Carratore',
+    license='MIT',
+    install_requires=[
+          'pandas',
+          'molmass==2021.6.18',
+          'scipy==1.8.1',
+          'tqdm==4.64.0'],
+    setup_requires = ['pytest-runner'],
+    tests_require= ['pytest==4.4.1'],
+    test_suite='test'
+)

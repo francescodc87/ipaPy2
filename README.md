@@ -4,7 +4,7 @@ isotope patterns and adduct formation.
 
 ***
 # Installation
-
+ipaPy2 requires Python 3.9 or higher
 ## Install via pip (recommended -  NOT THERE YET!)
 
 ## Compiling from source (macOS)

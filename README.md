@@ -3,6 +3,10 @@ Python implementation of the Integrated Probabilistic Annotation (IPA) - A Bayes
 isotope patterns and adduct formation.
 
 ***
+# Installation
+
+## Install via pip (recommended -  NOT THERE YET!)
+
 ## Compiling from source (macOS)
 1. create a folder in which you want to put the library
 ```

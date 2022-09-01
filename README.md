@@ -4,15 +4,14 @@ isotope patterns and adduct formation.
 
 ***
 ## Compiling from source (macOS)
-
 1. create a folder in which you want to put the library
 ```
 mkdir IPA
 cd IPA
 ```
-2. download the library
+2. download the library. If Homebrew is not installed in your machine, you can install it from here https://brew.sh 
 ```
-sudo apt install git
+brew install git
 git clone https://github.com/francescodc87/ipaPy2
 cd ipaPy2
 ```

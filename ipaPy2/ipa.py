@@ -479,7 +479,7 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
 
 
 def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,
-ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.5):
+ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7):
     """Annotation of the dataset base on the MS1 and MS2 information. Prior probabilities are based on mass only, while post probabilities
        are based on mass, RT, previous knowledge and isotope patterns.
     Inputs:
@@ -538,7 +538,7 @@ ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.5):
 
 
 def MSMSannotation_Parallel(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,
-ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.5,ncores=1):
+ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
     """Annotation of the dataset base on the MS1 and MS2 information. Prior probabilities are based on mass only, while post probabilities
        are based on mass, RT, previous knowledge and isotope patterns - parallelized version.
     Inputs:

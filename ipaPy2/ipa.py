@@ -506,7 +506,7 @@ ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7):
                instead of ppmCS, this must be set to 0. Default 0.
         ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
                instead of mzdCS, this must be set to 0. Default 10.
-        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.3
+        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
     Output:
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
@@ -565,7 +565,7 @@ ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
                instead of ppmCS, this must be set to 0. Default 0.
         ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
                instead of mzdCS, this must be set to 0. Default 10.
-        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.3
+        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
         ncores: default value 1. Number of cores used
     Output:
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the

@@ -188,6 +188,7 @@ def compute_all_adducts(adducts_file, DB):
     """
     print("computing all adducts ....")
     start = time.time()
+    DB = DB.replace(numpy.nan,None)
     adductsAll = pandas.read_csv(adducts_file)
     data=[]
     for db in range(0,len(DB.index)):
@@ -267,6 +268,7 @@ def compute_all_adducts_Parallel(adducts_file, DB, ncores=1):
     """
     print("computing all adducts ....")
     start = time.time()
+    DB = DB.replace(numpy.nan,None)
     adductsAll = pandas.read_csv(adducts_file)
     pool_obj = multiprocessing.Pool(ncores)
     data = pool_obj.map(partial(all_adducts_iter,DB,adductsAll),range(0,len(DB.index)))
@@ -923,6 +925,7 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H
     """
     print("computing all possible biochemical connections")
     start = time.time()
+    DB = DB.replace(numpy.nan,None)
     DB.loc[DB.reactions==None,'reactions']=''
         
     ### getting the ids of all possible hits to the database
@@ -987,6 +990,7 @@ def Compute_Bio_Parallel(DB, annotations, mode='reactions', connections = ["C3H5
     """
     print("computing all possible biochemical connections")
     start = time.time()
+    DB = DB.replace(numpy.nan,None)
     DB.loc[DB.reactions==None,'reactions']=''
 
     ### getting the ids of all possible hits to the database

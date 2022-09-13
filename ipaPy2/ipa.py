@@ -159,7 +159,7 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 def compute_all_adducts(adducts_file, DB):
     """compute all adducts table based on the information present in the database
     Inputs:
-        adducts_file: path to a csv file containing inforamtion on all possible adducts. The file
+        adducts_file: path to a csv file containing information on all possible adducts. The file
                       must be in the following format, and column names must be the same:
         Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
         M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1

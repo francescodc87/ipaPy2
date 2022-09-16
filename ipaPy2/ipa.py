@@ -193,7 +193,7 @@ def compute_all_adducts(adductsAll, DB, ionisation=1):
     DB = DB.replace(numpy.nan,None)
     data=[]
     for db in range(0,len(DB.index)):
-        data.append(all_adducts_iter(DB,adductsAll,db,ionisation))
+        data.append(all_adducts_iter(DB,adductsAll,ionisation,db))
     allAdds =pandas.concat(data,ignore_index=True)
     allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
     end = time.time()

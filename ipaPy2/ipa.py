@@ -1293,7 +1293,7 @@ def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,d
     return(ca, ca_id)
 
 
-def simpleIPA(df,ionisation,DB,adducts_file,ppm,dfMS2=None,DBMS2=None,noits=100,burn=None,delta_add=None,delta_bio=None,Bio=None,
+def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,burn=None,delta_add=None,delta_bio=None,Bio=None,
 mode='reactions',CSunk=0.5,isodiff=1,ppmiso=100,ncores=1,me=5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,ppmthr=None,
 pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
                "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
@@ -1310,9 +1310,9 @@ pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,connections = ["C3H5NO", "C6H12N4O", 
     map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)
     # computing all adducts
     if ncores>1:
-        allAdds = compute_all_adducts_Parallel(adducts_file= adducts_file, DB=DB,ncores=ncores)
+        allAdds = compute_all_adducts_Parallel(adductsAll= adductsAll, DB=DB,ncores=ncores)
     else:
-        allAdds = compute_all_adducts(adducts_file= adducts_file, DB=DB)
+        allAdds = compute_all_adducts(adductsAll= adductsAll, DB=DB)
 
     # computing priors
     if (dfMS2 is None) or (DBMS2 is None):

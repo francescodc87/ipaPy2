@@ -156,10 +156,10 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 
 
 
-def compute_all_adducts(adducts_file, DB):
+def compute_all_adducts(adductsAll, DB):
     """compute all adducts table based on the information present in the database
     Inputs:
-        adducts_file: path to a csv file containing information on all possible adducts. The file
+        adductsAll:a dataframe containing information on all possible adducts. The file
                       must be in the following format, and column names must be the same:
         Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
         M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
@@ -189,7 +189,6 @@ def compute_all_adducts(adducts_file, DB):
     print("computing all adducts ....")
     start = time.time()
     DB = DB.replace(numpy.nan,None)
-    adductsAll = pandas.read_csv(adducts_file)
     data=[]
     for db in range(0,len(DB.index)):
         data.append(all_adducts_iter(DB,adductsAll,db))
@@ -235,10 +234,10 @@ def all_adducts_iter(DB,adductsAll,db):
     
     
 
-def compute_all_adducts_Parallel(adducts_file, DB, ncores=1):
+def compute_all_adducts_Parallel(adductsAll, DB, ncores=1):
     """compute all adducts table based on the information present in the database - parallelized version
     Inputs:
-        adducts_file: path to a csv file containing inforamtion on all possible adducts. The file
+        adductsAll:a dataframe containing information on all possible adducts. The file
                       must be in the following format, and column names must be the same:
         Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
         M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
@@ -269,7 +268,6 @@ def compute_all_adducts_Parallel(adducts_file, DB, ncores=1):
     print("computing all adducts ....")
     start = time.time()
     DB = DB.replace(numpy.nan,None)
-    adductsAll = pandas.read_csv(adducts_file)
     pool_obj = multiprocessing.Pool(ncores)
     data = pool_obj.map(partial(all_adducts_iter,DB,adductsAll),range(0,len(DB.index)))
     pool_obj.terminate()

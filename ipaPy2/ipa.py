@@ -156,7 +156,7 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 
 
 
-def compute_all_adducts(adductsAll, DB):
+def compute_all_adducts(adductsAll, DB, ionisation=1):
     """compute all adducts table based on the information present in the database
     Inputs:
         adductsAll:a dataframe containing information on all possible adducts. The file
@@ -173,13 +173,15 @@ def compute_all_adducts(adductsAll, DB):
                 - smiles: smiles string - optional
                 - RT: if known, retention time range (in seconds) where this compound is expected
                       to elute (e.g., '30;60') - optional
-                - adducts: list of adducts that should be considered for this entry (e.g.,'M+Na;M+H;M+')
+                - adductsPos: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+')
+                - adductsNeg: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H')
                 - description: comments on the entry - optional
                 - pk: previous knowledge on the likelihood of this compoud to be present in the sample
                       analyse. The value has to be between 1 (compound likely to be present in the sample)
                       and 0 (compound cannot be present in the sample).
                 - MS2: id for the MS2 database entries related to this compound (optional)
                 - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional 
+        ionisation: Default value 1. positive = 1, negative = -1
     Output:
          allAdds: pandas dataframe containing the information on all the possible adducts given the database.
                   Example:
@@ -191,7 +193,7 @@ def compute_all_adducts(adductsAll, DB):
     DB = DB.replace(numpy.nan,None)
     data=[]
     for db in range(0,len(DB.index)):
-        data.append(all_adducts_iter(DB,adductsAll,db))
+        data.append(all_adducts_iter(DB,adductsAll,db,ionisation))
     allAdds =pandas.concat(data,ignore_index=True)
     allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
     end = time.time()
@@ -199,12 +201,15 @@ def compute_all_adducts(adductsAll, DB):
     return(allAdds)
 
 
-def all_adducts_iter(DB,adductsAll,db):
+def all_adducts_iter(DB,adductsAll,ionisation,db):
     f = DB['formula'][db]
     f = molmass.Formula(f)
     M=f.isotope.mass
     recs = []
-    adds = DB['adducts'][db]
+    if ionisation==1:
+        adds = DB['adductsPos'][db]
+    else:
+        adds = DB['adductsNeg'][db]
     adds = adds.split(';')
     adducts = adductsAll[adductsAll['Name'].isin(adds)]
     for add in range(0,len(adducts.index)):
@@ -234,7 +239,7 @@ def all_adducts_iter(DB,adductsAll,db):
     
     
 
-def compute_all_adducts_Parallel(adductsAll, DB, ncores=1):
+def compute_all_adducts_Parallel(adductsAll, DB, ionisation=1, ncores=1):
     """compute all adducts table based on the information present in the database - parallelized version
     Inputs:
         adductsAll:a dataframe containing information on all possible adducts. The file
@@ -251,13 +256,15 @@ def compute_all_adducts_Parallel(adductsAll, DB, ncores=1):
                 - smiles: smiles string - optional
                 - RT: if known, retention time range (in seconds) where this compound is expected
                       to elute (e.g., '30;60') - optional
-                - adducts: list of adducts that should be considered for this entry (e.g.,'M+Na;M+H;M+')
+                - adductsPos: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+')
+                - adductsNeg: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H')
                 - description: comments on the entry - optional
                 - pk: previous knowledge on the likelihood of this compoud to be present in the sample
                       analyse. The value has to be between 1 (compound likely to be present in the sample)
                       and 0 (compound cannot be present in the sample).
                 - MS2: id for the MS2 database entries related to this compound (optional)
                 - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional
+        ionisation: Default value 1. positive = 1, negative = -1
         ncores: default value 1. Number of cores used
     Output:
          allAdds: pandas dataframe containing the information on all the possible adducts given the database.
@@ -269,7 +276,7 @@ def compute_all_adducts_Parallel(adductsAll, DB, ncores=1):
     start = time.time()
     DB = DB.replace(numpy.nan,None)
     pool_obj = multiprocessing.Pool(ncores)
-    data = pool_obj.map(partial(all_adducts_iter,DB,adductsAll),range(0,len(DB.index)))
+    data = pool_obj.map(partial(all_adducts_iter,DB,adductsAll,ionisation),range(0,len(DB.index)))
     pool_obj.terminate()
     allAdds =pandas.concat(data,ignore_index=True)
     allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
@@ -903,7 +910,8 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H
                 - smiles: smiles string - optional
                 - RT: if known, retention time range (in seconds) where this compound is expected
                       to elute (e.g., '30;60') - optional
-                - adducts: list of adducts that should be considered for this entry (e.g.,'M+Na;M+H;M+')
+                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
+                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
                 - description: comments on the entry - optional
                 - pk: previous knowledge on the likelihood of this compoud to be present in the sample
                       analyse. The value has to be between 1 (compound likely to be present in the sample)
@@ -983,8 +991,37 @@ def Compute_Bio_Parallel(DB, annotations, mode='reactions', connections = ["C3H5
                "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
                "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
                "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"], ncores=1):
-    """Compute possible biochemical connetions given a database and a list of
-    possible connectios in the form of a list of formulas
+    """Compute matrix of biochemical connections. Parallelized version. Either based on a list of possible connections in the form of a list of formulas or
+    based on the reactions present in the database.
+    Inputs:
+        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
+            contain the following columns in this exact order (optional fields can contain None):
+                - id: unique id of the database entry (e.g., 'C00031') - necessary
+                - name: compund name (e.g., 'D-Glucose') - necessary
+                - formula: chemical formula (e.g., 'C6H12O6') - necessary
+                - inchi: inchi string - optional
+                - smiles: smiles string - optional
+                - RT: if known, retention time range (in seconds) where this compound is expected
+                      to elute (e.g., '30;60') - optional
+                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
+                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
+                - description: comments on the entry - optional
+                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
+                      analyse. The value has to be between 1 (compound likely to be present in the sample)
+                      and 0 (compound cannot be present in the sample).
+                - MS2: id for the MS2 database entries related to this compound (optional)
+                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional, but necessary if
+                  mode='reactions'.
+        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
+                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
+                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
+        mode: either 'reactions' (connections are computed based on the reactions present in the database) or 'connections' (connections are
+              computed based on the list of connections provided). Default 'reactions'.
+        connections: list of possible connections between compouds defined as formulas. Only necessary if mode='connections'. A list of common
+                     biotransformations is provided as default.
+        ncores: default value 1. Number of cores used
+    Output:
+        Bio: dataframe containing all the possible connections computed.
     """
     print("computing all possible biochemical connections")
     start = time.time()
@@ -1306,13 +1343,81 @@ pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,connections = ["C3H5NO", "C6H12N4O", 
                "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
                "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
                "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"]):
+    """Wrapper function performing the whole IPA pipeline.
+    Inputs:
+        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
+        ionisation:
+        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
+            contain the following columns in this exact order (optional fields can contain None):
+                - id: unique id of the database entry (e.g., 'C00031') - necessary
+                - name: compund name (e.g., 'D-Glucose') - necessary
+                - formula: chemical formula (e.g., 'C6H12O6') - necessary
+                - inchi: inchi string - optional
+                - smiles: smiles string - optional
+                - RT: if known, retention time range (in seconds) where this compound is expected
+                      to elute (e.g., '30;60') - optional
+                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
+                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
+                - description: comments on the entry - optional
+                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
+                      analyse. The value has to be between 1 (compound likely to be present in the sample)
+                      and 0 (compound cannot be present in the sample).
+                - MS2: id for the MS2 database entries related to this compound (optional)
+                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional, but necessary if
+                  mode='reactions'.
+        adductsAll:a dataframe containing information on all possible adducts. The file
+                      must be in the following format, and column names must be the same:
+                    Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
+                    M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
+                    M-H	    M-1.007276	-1	    1	    -1.007276	negative	FALSE	    H1	        1
+        ppm: accuracy of the MS instrument used
+        dfMS2: pandas dataframe containing the MS2 data (optional). It must contain 3 columns
+                -id: an unique id for each feature for which the MS2 spectrum was acquired (same as in df)
+                -spectrum: string containing the spectrum inforamtion in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
+                -ev: collision energy used to aquire the fragmentation spectrum
+        DBMS2: pandas dataframe containing the database containing the MS2 information (optional)
+        noits: number of iterations if the Gibbs sampler to be run
+        burn: number of iterations to be ignored when computing posterior probabilities. If None, is set to 10% of total iterations
+        delta_bio: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
+                   the more weight the adducts connections have on the posterior probabilities. Default 1.
+        delta_add: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
+                   the more weight the biochemical connections have on the posterior probabilities. Default 1.
+        Bio: dataframe (2 columns), reporting all the possible connections between compounds. It uses the unique ids from the database.
+             It could be the output of Compute_Bio() or Compute_Bio_Parallel().
+        mode: either 'reactions' (connections are computed based on the reactions present in the database) or 'connections' (connections are
+              computed based on the list of connections provided). Default 'reactions'.
+        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
+        isoDiff: Default value 1. Difference between isotopes of charge 1, does not need to be exact
+        ppmiso: Default value 100. Maximum ppm value allowed between 2 isotopes. It is very high on
+             purpose
+        ncores: default value 1. Number of cores used
+        me: accurate mass of the electron. Default 5.48579909065e-04
+        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
+                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
+                 scores as sqrt(1/ratiosd)
+        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
+        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
+        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
+        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
+        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
+                If not provided equal to 0.4
+        mzdCS: maximum mz difference allowed when computing cosine similarity scores. If one wants to use this parameter
+               instead of ppmCS, this must be set to 0. Default 0.
+        ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
+               instead of mzdCS, this must be set to 0. Default 10.
+        connections: list of possible connections between compouds defined as formulas. Only necessary if mode='connections'. A list of common
+                     biotransformations is provided as default.         
+    Output:
+        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
+                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
+    """
     # mapping isotopes
     map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)
     # computing all adducts
     if ncores>1:
-        allAdds = compute_all_adducts_Parallel(adductsAll= adductsAll, DB=DB,ncores=ncores)
+        allAdds = compute_all_adducts_Parallel(adductsAll= adductsAll, DB=DB, ionisation=ionisation ,ncores=ncores)
     else:
-        allAdds = compute_all_adducts(adductsAll= adductsAll, DB=DB)
+        allAdds = compute_all_adducts(adductsAll= adductsAll, DB=DB, ionisation=ionisation)
 
     # computing priors
     if (dfMS2 is None) or (DBMS2 is None):

@@ -24,14 +24,14 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
     """mapping isotope patterns in MS1 data.
     Inputs:
         df: pandas dataframe with the following columns:
-            1) ids: an unique id for each feature
-            2) rel.ids: relation ids. In a previous step of the data processing pipeline,features are
+            -ids: an unique id for each feature
+            -rel.ids: relation ids. In a previous step of the data processing pipeline,features are
                         clustered based on peak shape similarity/retention time. Features in the same
                         cluster are likely to come from the same metabolite. All isotope patterns must
                         be in the same rel.id cluster.
-            3) mzs: mass-to-charge ratios, usually the average across different samples.
-            4) RTs: retention times in seconds, usually the average across different samples.
-            5) maxInts: maximum intensity detected for each feature across samples (either peak area
+            -mzs: mass-to-charge ratios, usually the average across different samples.
+            -RTs: retention times in seconds, usually the average across different samples.
+            -Ints: representative (e.g., maximum or average) intensity detected for each feature across samples (either peak area
                         or peak intensity)
         isoDiff: Default value 1. Difference between isotopes of charge 1, does not need to be exact
         ppm: Default value 100. Maximum ppm value allowed between 2 isotopes. It is very high on

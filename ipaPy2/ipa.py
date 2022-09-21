@@ -17,6 +17,67 @@ from ipaPy2 import util
 
 
 
+def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
+    """Clustering MS1 features based on correlation across samples.
+    Inputs:
+        df: pandas dataframe with the following columns:
+            -ids: an unique id for each feature
+            -mzs: mass-to-charge ratios, usually the average across different samples.
+            -RTs: retention times in seconds, usually the average across different samples.
+            -Intensities: for each sample, a column reporting the detected intensities in each sample. 
+        Cthr: Default value 0.8. Minimun correlation allowed in each cluster
+        RTwin: Default value 1. Maximum differece in RT time between features in the same cluster
+        Intmode: Defines how the representative intensity of each feature is computed. If 'max' (default)
+                 the maximum across samples is used. If 'ave' the average across samples is computed
+    Output:
+         df: pandas dataframe in correct format to be used as an input of the map_isotope_patterns() function
+    """
+    print("Clustering features ....")
+    start = time.time()
+    ids = list(df.iloc[:,0])
+    rel_ids = []
+    mzs=list(df.iloc[:,1])
+    RTs=list(df.iloc[:,2])
+    CorrInts = df.iloc[:,3:len(df.index)].transpose().corr()
+    fids=[]
+    rids=[]
+    fmz=[]
+    fRTs =[]
+    fInt=[]
+    
+    if Intmode=='max':
+        Int=df.iloc[:,3:len(df.index)].max(axis=1)
+    elif Intmode=='ave':
+        Int=df.iloc[:,3:len(df.index)].mean(axis=1)
+    else:
+        raise ValueError("Intmode not allowed")
+    flag = True
+    rid = 0
+    while(flag):
+        RTdiff = [abs(v-RTs[0]) for v in RTs]
+        ind =[v for v in range(0,len(RTdiff)) if (CorrInts.iloc[v,0]>=Cthr and RTdiff[v]<=RTwin)]
+        indids=[ids[v] for v in ind]
+        fids.extend(indids)
+        rids.extend([rid]*len(indids))
+        fmz.extend([mzs[v] for v in ind])
+        fRTs.extend([RTs[v] for v in ind])
+        fInt.extend([Int[v] for v in ind])
+        rid=rid+1
+        indkeep = [v for v in range(0,len(ids)) if ids[v] not in indids]
+        if len(indkeep)>0:
+            ids=[ids[v] for v in indkeep]
+            mzs=[mzs[v] for v in indkeep]
+            RTs=[RTs[v] for v in indkeep]
+            Int=[Int[v] for v in indkeep]
+            CorrInts=CorrInts.iloc[indkeep,indkeep]
+        else:
+            flag=False
+        
+    df = pandas.DataFrame(list(zip(fids,rids,fmz,fRTs,fInt)),
+                              columns=['ids','rel.ids','mzs','RTs','Int'])
+    end = time.time()
+    print(round(end - start,1), 'seconds elapsed')
+    return(df)
 
 
 

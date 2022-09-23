@@ -16,19 +16,29 @@ from ipaPy2 import iterations
 
 
 def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
-    """Clustering MS1 features based on correlation across samples.
-    Inputs:
-        df: pandas dataframe with the following columns:
-            -ids: an unique id for each feature
-            -mzs: mass-to-charge ratios, usually the average across different samples.
-            -RTs: retention times in seconds, usually the average across different samples.
-            -Intensities: for each sample, a column reporting the detected intensities in each sample. 
-        Cthr: Default value 0.8. Minimun correlation allowed in each cluster
-        RTwin: Default value 1. Maximum differece in RT time between features in the same cluster
-        Intmode: Defines how the representative intensity of each feature is computed. If 'max' (default)
-                 the maximum across samples is used. If 'ave' the average across samples is computed
-    Output:
-         df: pandas dataframe in correct format to be used as an input of the map_isotope_patterns() function
+    """
+    Clustering MS1 features based on correlation across samples.
+    
+    Parameters
+    ----------
+    df: pandas dataframe with the following columns:
+        -ids: an unique id for each feature
+        -mzs: mass-to-charge ratios, usually the average across different
+              samples.
+        -RTs: retention times in seconds, usually the average across different
+              samples.
+        -Intensities: for each sample, a column reporting the detected
+                      intensities in each sample. 
+    Cthr: Default value 0.8. Minimun correlation allowed in each cluster
+    RTwin: Default value 1. Maximum differece in RT time between features in
+           the same cluster
+    Intmode: Defines how the representative intensity of each feature is
+             computed. If 'max' (default) the maximum across samples is used.
+             If 'ave' the average across samples is computed
+    Returns
+    -------
+    df: pandas dataframe in correct format to be used as an input of the
+    map_isotope_patterns() function
     """
     print("Clustering features ....")
     start = time.time()
@@ -79,34 +89,47 @@ def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
 
 
 def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
-    """mapping isotope patterns in MS1 data.
-    Inputs:
-        df: pandas dataframe with the following columns:
-            -ids: an unique id for each feature
-            -rel.ids: relation ids. In a previous step of the data processing pipeline,features are
-                        clustered based on peak shape similarity/retention time. Features in the same
-                        cluster are likely to come from the same metabolite. All isotope patterns must
-                        be in the same rel.id cluster.
-            -mzs: mass-to-charge ratios, usually the average across different samples.
-            -RTs: retention times in seconds, usually the average across different samples.
-            -Ints: representative (e.g., maximum or average) intensity detected for each feature across samples (either peak area
-                        or peak intensity)
-        isoDiff: Default value 1. Difference between isotopes of charge 1, does not need to be exact
-        ppm: Default value 100. Maximum ppm value allowed between 2 isotopes. It is very high on
-             purpose
-        ionisation: Default value 1. positive = 1, negative = -1
-    Output:
-         df: the main input is modified by adding and populating the following colums
-             6) relationship: the possible values are:
-                              - bp: basepeak, most intense peak within each realtion id
-                              - bp|isotope: isotope of the basepeak
-                              - potential bp: most intense peak within each isotope pattern
-                                              (excluding the basepeak)
-                              - potential bp|isotope: isotope of one potential bp
-             7) isotope pattern: feature used to cluster the different isotope patterns within
-                                 the same relation id
-             8) charge: predicted charge based on the isotope pattern (1,2,3 or -1,-2,-3 are
-                        the only values considered)
+    """
+    mapping isotope patterns in MS1 data.
+    
+    Parameters
+    ----------
+    df : pandas dataframe (necessary)
+         A dataframe containing the MS1 data including the following columns:
+            -ids : an unique id for each feature
+            -rel.ids:   relation ids. In a previous step of the data processing
+                        pipeline,features are clustered based on peak shape
+                        similarity/retention time. Features in the same
+                        cluster are likely to come from the same metabolite.
+                        All isotope patterns must be in the same rel.id
+                        cluster.
+            -mzs: mass-to-charge ratios, usually the average across
+                  different samples.
+            -RTs: retention times in seconds, usually the average across
+                  different samples.
+            -Ints: representative (e.g., maximum or average) intensity detected
+                   for each feature across samples (either peak area or peak
+                   intensity)
+    isoDiff : Default value 1. Difference between isotopes of charge 1, does
+              not need to be exact
+    ppm :  Default value 100. Maximum ppm value allowed between 2 isotopes.
+            It is very high on purpose
+    ionisation: Default value 1. positive = 1, negative = -1
+    
+    Returns
+    -------
+    df: the main input is modified by adding and populating the following
+        colums
+        - relationship: the possible values are:
+                        * bp: basepeak, most intense peak within each rel id
+                        * bp|isotope: isotope of the basepeak
+                        * potential bp: most intense peak within each isotope
+                                        pattern (excluding the basepeak)
+                        * potential bp|isotope: isotope of one potential bp
+        - isotope pattern: feature used to cluster the different isotope
+                            patterns within the same relation id
+        - charge: predicted charge based on the isotope pattern (1,2,3 or
+                  -1,-2,-3 are the only values allowed)
     """
     print("mapping isotope patterns ....")
     start = time.time()
@@ -215,37 +238,46 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 
 
 def compute_all_adducts(adductsAll, DB, ionisation=1, ncores=1):
-    """compute all adducts table based on the information present in the database
-    Inputs:
-        adductsAll:a dataframe containing information on all possible adducts. The file
-                      must be in the following format, and column names must be the same:
-        Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
-        M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
-        M-H	    M-1.007276	-1	    1	    -1.007276	negative	FALSE	    H1	        1
-        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
-            contain the following columns in this exact order (optional fields can contain None):
-                - id: unique id of the database entry (e.g., 'C00031') - necessary
-                - name: compund name (e.g., 'D-Glucose') - necessary
-                - formula: chemical formula (e.g., 'C6H12O6') - necessary
-                - inchi: inchi string - optional
-                - smiles: smiles string - optional
-                - RT: if known, retention time range (in seconds) where this compound is expected
-                      to elute (e.g., '30;60') - optional
-                - adductsPos: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+')
-                - adductsNeg: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H')
-                - description: comments on the entry - optional
-                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
-                      analyse. The value has to be between 1 (compound likely to be present in the sample)
-                      and 0 (compound cannot be present in the sample).
-                - MS2: id for the MS2 database entries related to this compound (optional)
-                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional 
-        ionisation: Default value 1. positive = 1, negative = -1
-        ncores: default value 1. Number of cores used
-    Output:
-         allAdds: pandas dataframe containing the information on all the possible adducts given the database.
-                  Example:
-        id	    name	    adduct	formula	    charge	m/z	        RT	    pk	    MS2
-        C00031	D-Glucose	M+H	    C6H13O6	    1	    181.070664	30;60	1.0	    EMBL-MCF_spec393569_1
+    """
+    compute all adducts table based on the information present in the database
+    
+    Parameters
+    ----------
+    adductsAll : pandas dataframe (necessary)
+                 Dataframen containing information on all possible
+                 adducts. The file must be in the same format as the example
+                 provided in the DB/adducts.csv
+    DB : pandas dataframe (necessary)
+         Datafrane containing the database against which the annotation is
+         performed. The DB must contain the following columns in this exact
+         order (optional fields can contain None):
+             - id: unique id of the database entry (e.g., 'C00031') - necessary
+             - name: compund name (e.g., 'D-Glucose') - necessary
+             - formula: chemical formula (e.g., 'C6H12O6') - necessary
+             - inchi: inchi string - optional
+             - smiles: smiles string - optional
+             - RT: if known, retention time range (in seconds) where this
+                   compound is expected to elute (e.g., '30;60') - optional
+             - adductsPos: list of adducts that should be considered in
+                           positive mode for this entry (e.g.,'M+Na;M+H;M+')
+             - adductsNeg: list of adducts that should be considered in
+                           negative mode for this entry (e.g.,'M-H;M-2H')
+             - description: comments on the entry - optional
+             - pk: previous knowledge on the likelihood of this compoud to be
+                   present in the sample analysed. The value has to be between
+                   1 (compound likely to be present in the sample) and 0
+                   (compound cannot be present in the sample).
+             - MS2: id for the MS2 database entries related to this compound
+                    (optional)
+             - reactions: list of reactions ids involving this compound
+                          (e.g., 'R00010 R00015 R00028')-optional 
+    ionisation : Default value 1. positive = 1, negative = -1
+    ncores : default value 1. Number of cores used
+    
+    Returns
+    -------
+    allAdds: pandas dataframe containing the information on all the possible
+    adducts given the database.
     """
     if ncores==1:
         print("computing all adducts ....")
@@ -276,28 +308,45 @@ def compute_all_adducts(adductsAll, DB, ionisation=1, ncores=1):
 
  
 
-def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,ppmthr=None, pRTNone=None, pRTout=None,ncores=1):
-    """Annotation of the dataset base on the MS1 information. Prior probabilities are based on mass only, while post probabilities
-       are based on mass, RT, previous knowledge and isotope patterns.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        allAdds: pandas dataframe containing the information on all the possible adducts given the database. It should
-                 be the output of either ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
-        ppm: accuracy of the MS instrument used
-        me: accurate mass of the electron. Default 5.48579909065e-04
-        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
-                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
-                 scores as sqrt(1/ratiosd)
-        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
-        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
-        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
-        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
-                If not provided equal to 0.4
-        ncores: default value 1. Number of cores used
-    Output:
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
+def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,
+                  ppmunk=None,ratiounk=None,ppmthr=None, pRTNone=None,
+                  pRTout=None,ncores=1):
+    """
+    Annotation of the dataset base on the MS1 information. Prior probabilities
+    are based on mass only, while post probabilities are based on mass, RT,
+    previous knowledge and isotope patterns.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+    allAdds: pandas dataframe containing the information on all the possible
+            adducts given the database. It should be the output of either
+            ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
+    ppm: accuracy of the MS instrument used
+    me: accurate mass of the electron. Default 5.48579909065e-04
+    ratiosd: default 0.9. It represents the acceptable ratio between predicted
+             intensity and observed intesity of isotopes. It is used to compute
+             the shape parameters of the lognormal distribution used to
+             calculate the isotope pattern scores as sqrt(1/ratiosd)
+    ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
+            to ppm.
+    ratiounk: isotope ratio associated to the 'unknown' annotation. If not
+              provided equal to 0.5
+    ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to
+            2*ppm
+    pRTNone: Multiplicative factor for the RT if no RTrange present in the
+             database. If not provided equal to 0.8
+    pRTout: Multiplicative factor for the RT if measured RT is outside the
+            RTrange present in the database. If not provided equal to 0.4
+    ncores: default value 1. Number of cores used
+    
+    Returns
+    -------
+    annotations: a dictonary containg all the possible annotations for the
+                measured features. The keys of the dictionay are the unique
+                ids for the features present in df. For each feature, the
+                annotations are summarized in a pandas dataframe.
     """
     if ncores==1:
         print("annotating based on MS1 information....")
@@ -355,39 +404,62 @@ def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None,
 
 
 
-def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,
-ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
-    """Annotation of the dataset base on the MS1 and MS2 information. Prior probabilities are based on mass only, while post probabilities
-       are based on mass, RT, previous knowledge and isotope patterns.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        dfMS2: pandas dataframe containing the MS2 data. It must contain 3 columns
-                -id: an unique id for each feature for which the MS2 spectrum was acquired (same as in df)
-                -spectrum: string containing the spectrum inforamtion in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
-                -ev: collision energy used to aquire the fragmentation spectrum
-        allAdds: pandas dataframe containing the information on all the possible adducts given the database. It should
-                 be the output of either ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
-        DBMS2: pandas dataframe containing the database containing the MS2 information
-        ppm: accuracy of the MS instrument used
-        me: accurate mass of the electron. Default 5.48579909065e-04
-        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
-                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
-                 scores as sqrt(1/ratiosd)
-        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
-        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
-        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
-        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
-                If not provided equal to 0.4
-        mzdCS: maximum mz difference allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of ppmCS, this must be set to 0. Default 0.
-        ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of mzdCS, this must be set to 0. Default 10.
-        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
-        ncores: default value 1. Number of cores used
-    Output:
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
+def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
+                   ratiosd=0.9,ppmunk=None, ratiounk=None,ppmthr=None,
+                   pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,
+                   ncores=1):
+    """
+    Annotation of the dataset base on the MS1 and MS2 information. Prior
+    probabilities are based on mass only, while post probabilities are based
+    on mass, RT, previous knowledge and isotope patterns.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+    dfMS2: pandas dataframe containing the MS2 data. It must contain 3 columns
+        -id: an unique id for each feature for which the MS2 spectrum was
+             acquired (same as in df)
+        -spectrum: string containing the spectrum inforamtion in the following
+                   format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
+        -ev: collision energy used to aquire the fragmentation spectrum
+    allAdds: pandas dataframe containing the information on all the possible
+            adducts given the database. It should be the output of either
+            ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
+    DBMS2: pandas dataframe containing the database containing the MS2
+           information
+    ppm: accuracy of the MS instrument used
+    me: accurate mass of the electron. Default 5.48579909065e-04
+    ratiosd: default 0.9. It represents the acceptable ratio between predicted
+            intensity and observed intesity of isotopes. it is used to compute
+            the shape parameters of the lognormal distribution used to
+            calculate the isotope pattern scores as sqrt(1/ratiosd)
+    ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
+            to ppm.
+    ratiounk: isotope ratio associated to the 'unknown' annotation. If not
+              provided equal to 0.5
+    ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to
+            2*ppm
+    pRTNone: Multiplicative factor for the RT if no RTrange present in the
+            database. If not provided equal to 0.8
+    pRTout: Multiplicative factor for the RT if measured RT is outside the
+            RTrange present in the database. If not provided equal to 0.4
+    mzdCS: maximum mz difference allowed when computing cosine similarity
+           scores. If one wants to use this parameter instead of ppmCS, this
+           must be set to 0. Default 0.
+    ppmCS: maximum ppm allowed when computing cosine similarity scores.
+           If one wants to use this parameter instead of mzdCS, this must be
+           set to 0. Default 10.
+    CSunk: cosine similarity score associated with the 'unknown' annotation.
+            Default 0.7
+    ncores: default value 1. Number of cores used
+    
+    Returns
+    -------
+    annotations: a dictonary containg all the possible annotations for the
+                 measured features. The keys of the dictionay are the unique
+                 ids for the features present in df. For each feature, the
+                 annotations are summarized in a pandas dataframe.
     """
     if ncores==1:
         print("annotating based on MS1 and MS2 information....")
@@ -444,26 +516,45 @@ ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
 
 
 
-def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,all_out=False,zs=None):
-    """Gibbs sampler considering only adduct connections. The function computes the posterior probabilities
-    of the annotations considering the adducts connections.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
-        noits: number of iterations if the Gibbs sampler to be run
-        burn: number of iterations to be ignored when computing posterior probabilities. If None, is set to 10% of total iterations
-        delta_add: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the adducts connections have on the posterior probabilities. Default 1.
-        all_out: logical value. If true the list of assigments found in each iteration is returned by the function. Default False.
-        zs: list of assigments computed in a previous run of the Gibbs sampler. Optional, default None.
-    Output:
-        annotations: the function modifies the annotations dictionary by adding 2 columns to each entry. One named 'post Gibbs'
-                     contains the posterior probabilities computed. The other is called 'chi-square pval' containing the p-value from
-                     a chi-squared test comparing the 'post' with the 'post Gibbs' probabilities.
-        zs: optional, if all_out==True, the function return the full list of assignments computed. This allows restarting the sampler
-            from where you are from a previous run.
+def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,
+                      all_out=False,zs=None):
+    """
+    Gibbs sampler considering only adduct connections. The function computes
+    the posterior probabilities of the annotations considering the adducts
+    connections.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+    annotations: a dictonary containg all the possible annotations for the
+                measured features. The keys of the dictionay are the unique
+                ids for the features present in df. For each feature, the
+                annotations are summarized in a pandas dataframe. Output of
+                functions MS1annotation(), MS1annotation_Parallel(),
+                MSMSannotation() or MSMSannotation_Parallel
+    noits: number of iterations if the Gibbs sampler to be run
+    burn: number of iterations to be ignored when computing posterior
+          probabilities. If None, is set to 10% of total iterations
+    delta_add: parameter used when computiong the conditional priors. The
+               parameter must be positive. The smaller the parameter the more
+               weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    all_out: logical value. If true the list of assigments found in each
+             iteration is returned by the function. Default False.
+    zs: list of assigments computed in a previous run of the Gibbs sampler. 
+        Optional, default None.
+    
+    Returns
+    -------
+    annotations: the function modifies the annotations dictionary by adding 2
+                 columns to each entry. One named 'post Gibbs' contains the
+                 posterior probabilities computed. The other is called
+                 'chi-square pval' containing the p-value from a chi-squared
+                 test comparing the 'post' with the 'post Gibbs' probabilities.
+    zs: optional, if all_out==True, the function return the full list of
+        assignments computed. This allows restarting the sampler from where
+        you are from a previous run.
     """
     start = time.time()
     print("computing posterior probabilities including adducts connections")
@@ -537,47 +628,69 @@ def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,all_out=Fal
         return(zs)
 
     
-def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
-               "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
-               "C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2","C11H10N2O","C9H9NO2",
-               "C5H9NO","C4H4O2","C3H5O","C10H12N5O6P","C10H15N2O3S","C10H14N2O2S","CH2ON",
-               "C21H34N7O16P3S","C21H33N7O15P3S","C10H15N3O5S","C5H7","C3H2O3","C16H30O",
-               "C8H8NO5P","CH3N2O","C5H4N5","C10H11N5O3","C10H13N5O9P2","C10H12N5O6P",
-               "C9H13N3O10P2","C9H12N3O7P","C4H4N3O","C10H13N5O10P2","C10H12N5O7P","C5H4N5O",
-               "C10H11N5O4","C10H14N2O10P2","C10H12N2O4","C5H5N2O2","C10H13N2O7P","C9H12N2O11P2",
-               "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
-               "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
-               "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"], ncores=1):
-    """Compute matrix of biochemical connections. Either based on a list of possible connections in the form of a list of formulas or
-    based on the reactions present in the database.
-    Inputs:
-        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
-            contain the following columns in this exact order (optional fields can contain None):
-                - id: unique id of the database entry (e.g., 'C00031') - necessary
-                - name: compund name (e.g., 'D-Glucose') - necessary
-                - formula: chemical formula (e.g., 'C6H12O6') - necessary
-                - inchi: inchi string - optional
-                - smiles: smiles string - optional
-                - RT: if known, retention time range (in seconds) where this compound is expected
-                      to elute (e.g., '30;60') - optional
-                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
-                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
-                - description: comments on the entry - optional
-                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
-                      analyse. The value has to be between 1 (compound likely to be present in the sample)
-                      and 0 (compound cannot be present in the sample).
-                - MS2: id for the MS2 database entries related to this compound (optional)
-                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional, but necessary if
-                  mode='reactions'.
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
-        mode: either 'reactions' (connections are computed based on the reactions present in the database) or 'connections' (connections are
-              computed based on the list of connections provided). Default 'reactions'.
-        connections: list of possible connections between compouds defined as formulas. Only necessary if mode='connections'. A list of common
-                     biotransformations is provided as default.
-        ncores: default value 1. Number of cores used
-    Output:
+def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO",
+               "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
+               "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO",
+               "C6H12N2O","C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2",
+               "C11H10N2O","C9H9NO2","C5H9NO","C4H4O2","C3H5O","C10H12N5O6P",
+               "C10H15N2O3S","C10H14N2O2S","CH2ON","C21H34N7O16P3S",
+               "C21H33N7O15P3S","C10H15N3O5S","C5H7","C3H2O3","C16H30O",
+               "C8H8NO5P","CH3N2O","C5H4N5","C10H11N5O3","C10H13N5O9P2",
+               "C10H12N5O6P","C9H13N3O10P2","C9H12N3O7P","C4H4N3O",
+               "C10H13N5O10P2","C10H12N5O7P","C5H4N5O","C10H11N5O4",
+               "C10H14N2O10P2","C10H12N2O4","C5H5N2O2","C10H13N2O7P",
+               "C9H12N2O11P2","C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2",
+               "C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2","C2H4","CO","C2O2",
+               "H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N",
+               "C6H10O5","C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6",
+               "C6H10O5","C18H30O15"], ncores=1):
+    """
+    Compute matrix of biochemical connections. Either based on a list of
+    possible connections in the form of a list of formulas or based on the
+    reactions present in the database.
+    
+    Parameters
+    ----------
+    DB: pandas dataframe containing the database against which the annotation
+        is performed. The DB must contain the following columns in this exact
+        order (optional fields can contain None):
+        - id: unique id of the database entry (e.g., 'C00031') - necessary
+        - name: compund name (e.g., 'D-Glucose') - necessary
+        - formula: chemical formula (e.g., 'C6H12O6') - necessary
+        - inchi: inchi string - optional
+        - smiles: smiles string - optional
+        - RT: if known, retention time range (in seconds) where this compound
+                is expected to elute (e.g., '30;60') - optional
+        - adductsPos: list of adducts that should be considered in postive mode
+                      for this entry (e.g.,'M+Na;M+H;M+') - necessary
+        - adductsNeg: list of adducts that should be considered in negative
+                      mode for this entry (e.g.,'M-H;M-2H') - necessary
+        - description: comments on the entry - optional
+        - pk: previous knowledge on the likelihood of this compoud to be
+             present in the sample analyse. The value has to be between 1
+             (compound likely to be present in the sample) and 0 (compound
+             cannot be present in the sample).
+        - MS2: id for the MS2 database entries related to this compound
+               (optional)
+        - reactions: list of reactions ids involving this compound
+                    (e.g., 'R00010 R00015 R00028')-optional, but necessary if 
+                    mode='reactions'.
+    annotations: a dictonary containg all the possible annotations for the
+                measured features. The keys of the dictionay are the unique ids
+                for the features present in df. For each feature, the
+                annotations are summarized in a pandas dataframe. Output of
+                functions MS1annotation(), MS1annotation_Parallel(),
+                MSMSannotation() or MSMSannotation_Parallel
+    mode: either 'reactions' (connections are computed based on the reactions
+          present in the database) or 'connections' (connections are computed
+          based on the list of connections provided). Default 'reactions'.
+    connections: list of possible connections between compouds defined as
+                formulas. Only necessary if mode='connections'. A list of
+                common biotransformations is provided as default.
+    ncores: default value 1. Number of cores used
+    
+    Returns
+    -------
         Bio: dataframe containing all the possible connections computed.
     """
     if ncores==1:
@@ -687,29 +800,45 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H
 
 
 
-def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,all_out=False,zs=None):
-    """Gibbs sampler considering only possible biochemical connections. The function computes the
-    posterior probabilities of the annotations considering the possible biochemical connections
-    reported in Bio.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
-        Bio: dataframe (2 columns), reporting all the possible connections between compounds. It uses the unique ids from the database.
-             It could be the output of Compute_Bio() or Compute_Bio_Parallel().
-        noits: number of iterations if the Gibbs sampler to be run
-        burn: number of iterations to be ignored when computing posterior probabilities. If None, is set to 10% of total iterations
-        delta_bio: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the adducts connections have on the posterior probabilities. Default 1.
-        all_out: logical value. If true the list of assigments found in each iteration is returned by the function. Default False.
-        zs: list of assigments computed in a previous run of the Gibbs sampler. Optional, default None.
-    Output:
-        annotations: the function modifies the annotations dictionary by adding 2 columns to each entry. One named 'post Gibbs'
-                     contains the posterior probabilities computed. The other is called 'chi-square pval' containing the p-value from
-                     a chi-squared test comparing the 'post' with the 'post Gibbs' probabilities.
-        zs: optional, if all_out==True, the function return the full list of assignments computed. This allows restarting the sampler
-            from where you are from a previous run.
+def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
+                      all_out=False,zs=None):
+    """
+    Gibbs sampler considering only possible biochemical connections. The
+    function computes the posterior probabilities of the annotations
+    considering the possible biochemical connections reported in Bio.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+    annotations: a dictonary containg all the possible annotations for the
+                 measured features. The keys of the dictionay are the unique
+                 ids for the features present in df. For each feature, the
+                 annotations are summarized in a pandas dataframe. Output of
+                 functions MS1annotation(), MS1annotation_Parallel(),
+                 MSMSannotation() or MSMSannotation_Parallel
+    Bio: dataframe (2 columns), reporting all the possible connections between
+         compounds. It uses the unique ids from the database. It could be the
+         output of Compute_Bio() or Compute_Bio_Parallel().
+    noits: number of iterations if the Gibbs sampler to be run
+    burn: number of iterations to be ignored when computing posterior
+          probabilities. If None, is set to 10% of total iterations
+    delta_bio: parameter used when computiong the conditional priors.
+               The parameter must be positive. The smaller the parameter the
+               more weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    all_out: logical value. If true the list of assigments found in each
+            iteration is returned by the function. Default False.
+    zs: list of assigments computed in a previous run of the Gibbs sampler.
+        Optional, default None.
+    
+    Returns
+    -------
+    annotations: a dictonary containg all the possible annotations for the
+                 measured features. The keys of the dictionay are the unique
+                 ids for the features present in df. For each feature, the
+                 annotations are summarized in a pandas dataframe.
+
     """
     start = time.time()
     print("computing posterior probabilities including biochemical connections")
@@ -788,31 +917,53 @@ def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,all_out
 
 
 
-def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,delta_add=1,all_out=False,zs=None):
-    """Gibbs sampler considering both biochemical and adducts connections. The function computes the
-    posterior probabilities of the annotations considering the possible biochemical connections
-    reported in Bio and the possible adducts connection.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
-        Bio: dataframe (2 columns), reporting all the possible connections between compounds. It uses the unique ids from the database.
-             It could be the output of Compute_Bio() or Compute_Bio_Parallel().
-        noits: number of iterations if the Gibbs sampler to be run
-        burn: number of iterations to be ignored when computing posterior probabilities. If None, is set to 10% of total iterations
-        delta_bio: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the adducts connections have on the posterior probabilities. Default 1.
-        delta_add: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the biochemical connections have on the posterior probabilities. Default 1.
-        all_out: logical value. If true the list of assigments found in each iteration is returned by the function. Default False.
-        zs: list of assigments computed in a previous run of the Gibbs sampler. Optional, default None.
-    Output:
-        annotations: the function modifies the annotations dictionary by adding 2 columns to each entry. One named 'post Gibbs'
-                     contains the posterior probabilities computed. The other is called 'chi-square pval' containing the p-value from
-                     a chi-squared test comparing the 'post' with the 'post Gibbs' probabilities.
-        zs: optional, if all_out==True, the function return the full list of assignments computed. This allows restarting the sampler
-            from where you are from a previous run.
+def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
+                          delta_add=1,all_out=False,zs=None):
+    """
+    Gibbs sampler considering both biochemical and adducts connections. The
+    function computes the posterior probabilities of the annotations
+    considering the possible biochemical connections reported in Bio and the
+    possible adducts connection.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+    annotations: a dictonary containg all the possible annotations for the
+                 measured features. The keys of the dictionay are the unique
+                 ids for the features present in df. For each feature, the
+                 annotations are summarized in a pandas dataframe. Output of
+                 functions MS1annotation(), MS1annotation_Parallel(),
+                 MSMSannotation() or MSMSannotation_Parallel
+    Bio: dataframe (2 columns), reporting all the possible connections between
+         compounds. It uses the unique ids from the database. It could be the
+         output of Compute_Bio() or Compute_Bio_Parallel().
+    noits: number of iterations if the Gibbs sampler to be run
+    burn: number of iterations to be ignored when computing posterior
+          probabilities. If None, is set to 10% of total iterations
+    delta_bio: parameter used when computiong the conditional priors.
+               The parameter must be positive. The smaller the parameter the
+               more weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    delta_add: parameter used when computiong the conditional priors. The
+               parameter must be positive. The smaller the parameter the more
+               weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    all_out: logical value. If true the list of assigments found in each
+            iteration is returned by the function. Default False.
+    zs: list of assigments computed in a previous run of the Gibbs sampler.
+        Optional, default None.
+    
+    Returns
+    -------
+    annotations: the function modifies the annotations dictionary by adding 2
+                columns to each entry. One named 'post Gibbs' contains the
+                posterior probabilities computed. The other is called
+                'chi-square pval' containing the p-value from a chi-squared
+                test comparing the 'post' with the 'post Gibbs' probabilities.
+    zs: optional, if all_out==True, the function return the full list of
+        assignments computed. This allows restarting the sampler from where you
+        are from a previous run
     """
     start = time.time()
     print("computing posterior probabilities including biochemical and adducts connections")
@@ -886,83 +1037,124 @@ def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,del
         return(zs)
 
 
-def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,burn=None,delta_add=None,delta_bio=None,Bio=None,
-mode='reactions',CSunk=0.5,isodiff=1,ppmiso=100,ncores=1,me=5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,ppmthr=None,
-pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
-               "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
-               "C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2","C11H10N2O","C9H9NO2",
-               "C5H9NO","C4H4O2","C3H5O","C10H12N5O6P","C10H15N2O3S","C10H14N2O2S","CH2ON",
-               "C21H34N7O16P3S","C21H33N7O15P3S","C10H15N3O5S","C5H7","C3H2O3","C16H30O",
-               "C8H8NO5P","CH3N2O","C5H4N5","C10H11N5O3","C10H13N5O9P2","C10H12N5O6P",
-               "C9H13N3O10P2","C9H12N3O7P","C4H4N3O","C10H13N5O10P2","C10H12N5O7P","C5H4N5O",
-               "C10H11N5O4","C10H14N2O10P2","C10H12N2O4","C5H5N2O2","C10H13N2O7P","C9H12N2O11P2",
-               "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
-               "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
-               "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"]):
-    """Wrapper function performing the whole IPA pipeline.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        ionisation:
-        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
-            contain the following columns in this exact order (optional fields can contain None):
-                - id: unique id of the database entry (e.g., 'C00031') - necessary
-                - name: compund name (e.g., 'D-Glucose') - necessary
-                - formula: chemical formula (e.g., 'C6H12O6') - necessary
-                - inchi: inchi string - optional
-                - smiles: smiles string - optional
-                - RT: if known, retention time range (in seconds) where this compound is expected
-                      to elute (e.g., '30;60') - optional
-                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
-                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
-                - description: comments on the entry - optional
-                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
-                      analyse. The value has to be between 1 (compound likely to be present in the sample)
-                      and 0 (compound cannot be present in the sample).
-                - MS2: id for the MS2 database entries related to this compound (optional)
-                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional, but necessary if
-                  mode='reactions'.
-        adductsAll:a dataframe containing information on all possible adducts. The file
-                      must be in the following format, and column names must be the same:
-                    Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
-                    M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
-                    M-H	    M-1.007276	-1	    1	    -1.007276	negative	FALSE	    H1	        1
-        ppm: accuracy of the MS instrument used
-        dfMS2: pandas dataframe containing the MS2 data (optional). It must contain 3 columns
-                -id: an unique id for each feature for which the MS2 spectrum was acquired (same as in df)
-                -spectrum: string containing the spectrum inforamtion in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
-                -ev: collision energy used to aquire the fragmentation spectrum
-        DBMS2: pandas dataframe containing the database containing the MS2 information (optional)
-        noits: number of iterations if the Gibbs sampler to be run
-        burn: number of iterations to be ignored when computing posterior probabilities. If None, is set to 10% of total iterations
-        delta_bio: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the adducts connections have on the posterior probabilities. Default 1.
-        delta_add: parameter used when computiong the conditional priors. The parameter must be positive. The smaller the parameter
-                   the more weight the biochemical connections have on the posterior probabilities. Default 1.
-        Bio: dataframe (2 columns), reporting all the possible connections between compounds. It uses the unique ids from the database.
-             It could be the output of Compute_Bio() or Compute_Bio_Parallel().
-        mode: either 'reactions' (connections are computed based on the reactions present in the database) or 'connections' (connections are
-              computed based on the list of connections provided). Default 'reactions'.
-        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
-        isoDiff: Default value 1. Difference between isotopes of charge 1, does not need to be exact
-        ppmiso: Default value 100. Maximum ppm value allowed between 2 isotopes. It is very high on
-             purpose
-        ncores: default value 1. Number of cores used
-        me: accurate mass of the electron. Default 5.48579909065e-04
-        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
-                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
-                 scores as sqrt(1/ratiosd)
-        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
-        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
-        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
-        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
-                If not provided equal to 0.4
-        mzdCS: maximum mz difference allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of ppmCS, this must be set to 0. Default 0.
-        ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of mzdCS, this must be set to 0. Default 10.
-        connections: list of possible connections between compouds defined as formulas. Only necessary if mode='connections'. A list of common
-                     biotransformations is provided as default.         
+def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
+              burn=None,delta_add=None,delta_bio=None,Bio=None,
+              mode='reactions',CSunk=0.5,isodiff=1,ppmiso=100,ncores=1,
+              me=5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,
+              ppmthr=None,pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,
+              connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3",
+                             "C3H5NOS", "C6H10N2O3S2","C5H7NO3","C5H8N2O2",
+                             "C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
+                             "C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2",
+                             "C11H10N2O","C9H9NO2","C5H9NO","C4H4O2","C3H5O",
+                             "C10H12N5O6P","C10H15N2O3S","C10H14N2O2S","CH2ON",
+                             "C21H34N7O16P3S","C21H33N7O15P3S","C10H15N3O5S",
+                             "C5H7","C3H2O3","C16H30O","C8H8NO5P","CH3N2O",
+                             "C5H4N5","C10H11N5O3","C10H13N5O9P2",
+                             "C10H12N5O6P","C9H13N3O10P2","C9H12N3O7P",
+                             "C4H4N3O","C10H13N5O10P2","C10H12N5O7P","C5H4N5O",
+                             "C10H11N5O4","C10H14N2O10P2","C10H12N2O4",
+                             "C5H5N2O2","C10H13N2O7P","C9H12N2O11P2",
+                             "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2",
+                             "C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2","C2H4",
+                             "CO","C2O2","H2","O","P","C2H2O","CH2","HPO3",
+                             "NH2","PP","NH","SO3","N","C6H10O5",
+               "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5",
+               "C18H30O15"]):
+    """
+    Wrapper function performing the whole IPA pipeline.
+    
+    Parameters
+    ----------
+    df: pandas dataframe containg the MS1 data. It should be the output of the
+        function ipa.map_isotope_patterns()
+        
+    DB: pandas dataframe containing the database against which the annotation
+        is performed. The DB must contain the following columns in this exact
+        order (optional fields can contain None):
+        - id: unique id of the database entry (e.g., 'C00031') - necessary
+        - name: compund name (e.g., 'D-Glucose') - necessary
+        - formula: chemical formula (e.g., 'C6H12O6') - necessary
+        - inchi: inchi string - optional
+        - smiles: smiles string - optional
+        - RT: if known, retention time range (in seconds) where this compound
+                is expected to elute (e.g., '30;60') - optional
+        - adductsPos: list of adducts that should be considered in postive mode
+                      for this entry (e.g.,'M+Na;M+H;M+') - necessary
+        - adductsNeg: list of adducts that should be considered in negative
+                      mode for this entry (e.g.,'M-H;M-2H') - necessary
+        - description: comments on the entry - optional
+        - pk: previous knowledge on the likelihood of this compoud to be
+             present in the sample analyse. The value has to be between 1
+             (compound likely to be present in the sample) and 0 (compound
+             cannot be present in the sample).
+        - MS2: id for the MS2 database entries related to this compound
+               (optional)
+        - reactions: list of reactions ids involving this compound
+                    (e.g., 'R00010 R00015 R00028')-optional, but necessary if 
+                    mode='reactions'.
+    adductsAll:a dataframe containing information on all possible adducts. 	        1
+    ppm: accuracy of the MS instrument used
+    dfMS2: pandas dataframe containing the MS2 data (optional). It must contain
+           3 columns:
+                   -id: an unique id for each feature for which the MS2 spectrum
+                       was acquired (same as in df)
+                   -spectrum: string containing the spectrum inforamtion in the
+                              following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
+                   -ev: collision energy used to aquire the fragmentation
+                       spectrum
+    DBMS2: pandas dataframe containing the database containing the MS2
+           information (optional)
+    noits: number of iterations if the Gibbs sampler to be run
+    burn: number of iterations to be ignored when computing posterior
+          probabilities. If None, is set to 10% of total iterations
+    delta_bio: parameter used when computiong the conditional priors.
+               The parameter must be positive. The smaller the parameter the
+               more weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    delta_add: parameter used when computiong the conditional priors. The
+               parameter must be positive. The smaller the parameter the more
+               weight the adducts connections have on the posterior
+               probabilities. Default 1.
+    Bio: dataframe (2 columns), reporting all the possible connections between
+         compounds. It uses the unique ids from the database. It could be the
+         output of Compute_Bio() or Compute_Bio_Parallel().
+    mode: either 'reactions' (connections are computed based on the reactions
+          present in the database) or 'connections' (connections are computed
+          based on the list of connections provided). Default 'reactions'.
+   CSunk: cosine similarity score associated with the 'unknown' annotation.
+           Default 0.7    
+   isoDiff: Default value 1. Difference between isotopes of charge 1, does not
+            need to be exact
+    ppmiso: Default value 100. Maximum ppm value allowed between 2 isotopes.
+            It is very high on purpose
+    ncores: default value 1. Number of cores used
+    
+
+    me: accurate mass of the electron. Default 5.48579909065e-04
+    ratiosd: default 0.9. It represents the acceptable ratio between predicted
+            intensity and observed intesity of isotopes. it is used to compute
+            the shape parameters of the lognormal distribution used to
+            calculate the isotope pattern scores as sqrt(1/ratiosd)
+    ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
+            to ppm.
+    ratiounk: isotope ratio associated to the 'unknown' annotation. If not
+              provided equal to 0.5
+    ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to
+            2*ppm
+    pRTNone: Multiplicative factor for the RT if no RTrange present in the
+            database. If not provided equal to 0.8
+    pRTout: Multiplicative factor for the RT if measured RT is outside the
+            RTrange present in the database. If not provided equal to 0.4
+    mzdCS: maximum mz difference allowed when computing cosine similarity
+           scores. If one wants to use this parameter instead of ppmCS, this
+           must be set to 0. Default 0.
+    ppmCS: maximum ppm allowed when computing cosine similarity scores.
+           If one wants to use this parameter instead of mzdCS, this must be
+           set to 0. Default 10.
+    connections: list of possible connections between compouds defined as
+                formulas. Only necessary if mode='connections'. A list of
+                common biotransformations is provided as default.
     Output:
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.

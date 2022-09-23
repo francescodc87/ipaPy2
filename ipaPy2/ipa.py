@@ -10,11 +10,9 @@ import collections
 import itertools
 import multiprocessing
 from functools import partial
-import statistics
 from tqdm import tqdm
-from ipaPy2 import MS2compare
 from ipaPy2 import util
-
+from ipaPy2 import iterations
 
 
 def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
@@ -35,7 +33,6 @@ def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
     print("Clustering features ....")
     start = time.time()
     ids = list(df.iloc[:,0])
-    rel_ids = []
     mzs=list(df.iloc[:,1])
     RTs=list(df.iloc[:,2])
     CorrInts = df.iloc[:,3:len(df.index)].transpose().corr()
@@ -217,7 +214,7 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 
 
 
-def compute_all_adducts(adductsAll, DB, ionisation=1):
+def compute_all_adducts(adductsAll, DB, ionisation=1, ncores=1):
     """compute all adducts table based on the information present in the database
     Inputs:
         adductsAll:a dataframe containing information on all possible adducts. The file
@@ -243,89 +240,6 @@ def compute_all_adducts(adductsAll, DB, ionisation=1):
                 - MS2: id for the MS2 database entries related to this compound (optional)
                 - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional 
         ionisation: Default value 1. positive = 1, negative = -1
-    Output:
-         allAdds: pandas dataframe containing the information on all the possible adducts given the database.
-                  Example:
-        id	    name	    adduct	formula	    charge	m/z	        RT	    pk	    MS2
-        C00031	D-Glucose	M+H	    C6H13O6	    1	    181.070664	30;60	1.0	    EMBL-MCF_spec393569_1
-    """
-    print("computing all adducts ....")
-    start = time.time()
-    DB = DB.replace(numpy.nan,None)
-    data=[]
-    for db in range(0,len(DB.index)):
-        data.append(all_adducts_iter(DB,adductsAll,ionisation,db))
-    allAdds =pandas.concat(data,ignore_index=True)
-    allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
-    return(allAdds)
-
-
-def all_adducts_iter(DB,adductsAll,ionisation,db):
-    f = DB['formula'][db]
-    f = molmass.Formula(f)
-    M=f.isotope.mass
-    recs = []
-    if ionisation==1:
-        adds = DB['adductsPos'][db]
-    else:
-        adds = DB['adductsNeg'][db]
-    adds = adds.split(';')
-    adducts = adductsAll[adductsAll['Name'].isin(adds)]
-    for add in range(0,len(adducts.index)):
-        f1=f
-        id=DB['id'][db]
-        name=DB['name'][db]
-        addtype=adducts.iloc[add,0]
-        charge = adducts.iloc[add,2]
-        rt = DB['RT'][db]
-        pk = DB['pk'][db]
-        ms2ind = DB['MS2'][db]
-        mz=M/abs(charge)
-        mz=mz*adducts.iloc[add,3]
-        mz=mz+adducts.iloc[add,4]
-        if adducts.iloc[add,6] != 'FALSE':
-            f1=f1.__mul__(int(adducts.iloc[add,8]))
-            f1=f1.__add__(molmass.Formula(adducts.iloc[add,6]))
-        if adducts.iloc[add,7] != 'FALSE':
-            ###I need to add a check here to see if the sub is possible
-            f1=f1.__mul__(int(adducts.iloc[add,8]))
-            sub=molmass.Formula(adducts.iloc[add,7])
-            if util.check_ded(f1,sub): 
-                f1=f1.__sub__(sub)
-        form=f1.formula    
-        recs.append([id,name,addtype,form,charge,mz,rt,pk,ms2ind])
-    return(pandas.DataFrame(recs)) 
-    
-    
-
-def compute_all_adducts_Parallel(adductsAll, DB, ionisation=1, ncores=1):
-    """compute all adducts table based on the information present in the database - parallelized version
-    Inputs:
-        adductsAll:a dataframe containing information on all possible adducts. The file
-                      must be in the following format, and column names must be the same:
-        Name    calc	    Charge	Mult	Mass	    Ion_mode	Formula_add	Formula_ded	Multi
-        M+H     M+1.007276	1	    1	    1.007276	positive	H1	        FALSE	    1
-        M-H	    M-1.007276	-1	    1	    -1.007276	negative	FALSE	    H1	        1
-        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
-            contain the following columns in this exact order (optional fields can contain None):
-                - id: unique id of the database entry (e.g., 'C00031') - necessary
-                - name: compund name (e.g., 'D-Glucose') - necessary
-                - formula: chemical formula (e.g., 'C6H12O6') - necessary
-                - inchi: inchi string - optional
-                - smiles: smiles string - optional
-                - RT: if known, retention time range (in seconds) where this compound is expected
-                      to elute (e.g., '30;60') - optional
-                - adductsPos: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+')
-                - adductsNeg: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H')
-                - description: comments on the entry - optional
-                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
-                      analyse. The value has to be between 1 (compound likely to be present in the sample)
-                      and 0 (compound cannot be present in the sample).
-                - MS2: id for the MS2 database entries related to this compound (optional)
-                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional
-        ionisation: Default value 1. positive = 1, negative = -1
         ncores: default value 1. Number of cores used
     Output:
          allAdds: pandas dataframe containing the information on all the possible adducts given the database.
@@ -333,20 +247,36 @@ def compute_all_adducts_Parallel(adductsAll, DB, ionisation=1, ncores=1):
         id	    name	    adduct	formula	    charge	m/z	        RT	    pk	    MS2
         C00031	D-Glucose	M+H	    C6H13O6	    1	    181.070664	30;60	1.0	    EMBL-MCF_spec393569_1
     """
-    print("computing all adducts ....")
-    start = time.time()
-    DB = DB.replace(numpy.nan,None)
-    pool_obj = multiprocessing.Pool(ncores)
-    data = pool_obj.map(partial(all_adducts_iter,DB,adductsAll,ionisation),range(0,len(DB.index)))
-    pool_obj.terminate()
-    allAdds =pandas.concat(data,ignore_index=True)
-    allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
+    if ncores==1:
+        print("computing all adducts ....")
+        start = time.time()
+        DB = DB.replace(numpy.nan,None)
+        data=[]
+        for db in range(0,len(DB.index)):
+            data.append(iterations.all_adducts_iter(DB,adductsAll,ionisation,db))
+        allAdds =pandas.concat(data,ignore_index=True)
+        allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
+    elif ncores>1:
+        print("computing all adducts - Parallelized ....")
+        start = time.time()
+        DB = DB.replace(numpy.nan,None)
+        pool_obj = multiprocessing.Pool(ncores)
+        data = pool_obj.map(partial(iterations.all_adducts_iter,DB,adductsAll,ionisation),range(0,len(DB.index)))
+        pool_obj.terminate()
+        allAdds =pandas.concat(data,ignore_index=True)
+        allAdds.columns=['id','name','adduct','formula','charge','m/z','RT','pk','MS2']
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
+    else:
+        raise ValueError("ncores must be >=1")
     return(allAdds)
 
 
-def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,ppmthr=None, pRTNone=None, pRTout=None):
+ 
+
+def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,ppmthr=None, pRTNone=None, pRTout=None,ncores=1):
     """Annotation of the dataset base on the MS1 information. Prior probabilities are based on mass only, while post probabilities
        are based on mass, RT, previous knowledge and isotope patterns.
     Inputs:
@@ -364,251 +294,71 @@ def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None,
         pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
         pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
                 If not provided equal to 0.4
-    Output:
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-    """
-    print("annotating based on MS1 information....")
-    start = time.time()
-    if ppmunk is None:
-        ppmunk = ppm
-    if ppmthr is None:
-        ppmthr = 2*ppm
-    if ratiounk is None:
-        ratiounk = 0.5
-    if pRTNone is None:
-        pRTNone = 0.8
-    if pRTout is None:
-        pRTout = 0.4
-    annotations={}
-    ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
-    ind.sort()
-    sigmaln = math.sqrt(1/ratiosd)
-    data=[]
-    for k in ind:
-        data.append(MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln,k))
-    keys = list(df.iloc[ind,0])
-    annotations = dict(zip(keys, data))
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
-    return(annotations)        
-
-
-def MS1annotation_Parallel(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,ppmthr=None, pRTNone=None, pRTout=None, ncores=1):
-    """Annotation of the dataset base on the MS1 information. Prior probabilities are based on mass only, while post probabilities
-       are based on mass, RT, previous knowledge and isotope patterns - parallelized version.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        allAdds: pandas dataframe containing the information on all the possible adducts given the database. It should
-                 be the output of either ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
-        ppm: accuracy of the MS instrument used
-        me: accurate mass of the electron. Default 5.48579909065e-04
-        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
-                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
-                 scores as sqrt(1/ratiosd)
-        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
-        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
-        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
-        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
-                If not provided equal to 0.4
         ncores: default value 1. Number of cores used
     Output:
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
     """
-    print("annotating based on MS1 information....")
-    print("annotating and computing isotope pattern scores ....")
-    start = time.time()
-    if ppmunk is None:
-        ppmunk = ppm
-    if ppmthr is None:
-        ppmthr = 2*ppm
-    if ratiounk is None:
-        ratiounk = 0.5
-    if pRTNone is None:
-        pRTNone = 0.8
-    if pRTout is None:
-        pRTout = 0.4
-    
-    annotations={}
-    ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
-    ind.sort()
-    sigmaln = math.sqrt(1/ratiosd)
-    pool_obj = multiprocessing.Pool(ncores)
-    data = pool_obj.map(partial(MS1_ann_iter,df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln),ind)
-    pool_obj.terminate()
-    keys = list(df.iloc[ind,0])
-    annotations = dict(zip(keys, data))
-    ##convert data into dictionary! annotations[df.iloc[k,0]]=tmp
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
+    if ncores==1:
+        print("annotating based on MS1 information....")
+        start = time.time()
+        if ppmunk is None:
+            ppmunk = ppm
+        if ppmthr is None:
+            ppmthr = 2*ppm
+        if ratiounk is None:
+            ratiounk = 0.5
+        if pRTNone is None:
+            pRTNone = 0.8
+        if pRTout is None:
+            pRTout = 0.4
+        annotations={}
+        ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
+        ind.sort()
+        sigmaln = math.sqrt(1/ratiosd)
+        data=[]
+        for k in ind:
+            data.append(iterations.MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln,k))
+        keys = list(df.iloc[ind,0])
+        annotations = dict(zip(keys, data))
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
+    elif ncores>1:
+        print("annotating based on MS1 information - Parallelized ...")
+        start = time.time()
+        if ppmunk is None:
+            ppmunk = ppm
+        if ppmthr is None:
+            ppmthr = 2*ppm
+        if ratiounk is None:
+            ratiounk = 0.5
+        if pRTNone is None:
+            pRTNone = 0.8
+        if pRTout is None:
+            pRTout = 0.4
+        
+        annotations={}
+        ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
+        ind.sort()
+        sigmaln = math.sqrt(1/ratiosd)
+        pool_obj = multiprocessing.Pool(ncores)
+        data = pool_obj.map(partial(iterations.MS1_ann_iter,df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln),ind)
+        pool_obj.terminate()
+        keys = list(df.iloc[ind,0])
+        annotations = dict(zip(keys, data))
+        ##convert data into dictionary! annotations[df.iloc[k,0]]=tmp
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
+    else:
+        raise ValueError("ncores must be >=1")
     return(annotations)        
 
-
-def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln,k):
-    mm= df.iloc[k,2]
-    rtm=df.iloc[k,3]
-    ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
-    hits = util.which(abs(ppms)<=ppmthr)
-    priors = list(ppms[hits].copy())
-    priors.append(ppmunk)
-    priors = stats.norm(0, ppm/2).pdf(priors)
-    priors=priors/sum(priors)
-    pks = list(allAdds.pk[hits].copy())
-    pks.append(1)
-    if len(hits)>0: #have to add the unknowm
-        tmp = allAdds.iloc[hits,[0,1,3,2,5,4,6]].copy()
-        tmp = tmp.rename(columns={'RT':'RT range'})
-        tmp['ppm'] = ppms[hits]
-        tmp['isotope pattern score'] = [None]*len(hits)
-        tmp['fragmentation pattern score'] = [None]*len(hits)
-        tmp['prior'] = [None]*len(hits)
-        tmp['post'] = [None]*len(hits)
-        uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],
-                       'isotope pattern score':[None],
-                       'fragmentation pattern score':[None],'prior':[None],'post':[None]})
-        tmp=pandas.concat([tmp,uk])
-        ### compute isotope pattern scores
-        relid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),1])[0]
-        isoid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),6])[0]
-        tmp.iloc[:,10] = priors
-        if isoid is not None:
-            indiso = list(set(util.which(df.iloc[:,1]==relid)) & set(util.which(df.iloc[:,6]==isoid)))
-            ISm = df.iloc[indiso,[2,4]]
-            ### computing isotope patterns scores
-            pisoM=[]
-            pisoI=[]
-            for isp in range(0,len(hits)):
-                mtmp = molmass.Formula(tmp.iloc[isp,2])
-                ch = tmp.iloc[isp,5]
-                ISt = mtmp.spectrum()
-                ISt = pandas.DataFrame(ISt).transpose()
-                if(len(ISt.index)<len(ISm.index)):
-                    pisoM.append(0)
-                    pisoI.append(0)
-                else:
-                    if ch>0:
-                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) - me
-                    else:
-                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) + me
-
-                    ISt=ISt.sort_values(by=[0])
-                    ISm=ISm.sort_values(by=['mzs'])
-                    ISm.iloc[:,1] = ISm.iloc[:,1]/max(ISm.iloc[:,1])
-                    ISt = ISt.iloc[range(0,len(ISm.index)),:]
-                    ISt.iloc[:,1] = ISt.iloc[:,1]/max(ISt.iloc[:,1])
-                    pMs = []
-                    pIs = []
-                    for ps in range(1,len(ISm.index)):
-                        ppmk =((ISt.iloc[ps,0]-ISm.iloc[ps,0])/ISt.iloc[ps,0])*(10**6)
-                        pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
-                        pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
-
-                    pisoM.append(sum(pMs))
-                    pisoI.append(sum(pIs))
-            ###adding scores for unknown
-            pisoM.append(sum([stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0)]*len(ISm.index)))
-            pisoI.append(sum([stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2))]*len(ISm.index)))    
-            pisoM = pisoM/sum(pisoM)
-            pisoI = pisoI/sum(pisoI)
-            piso = pisoM*pisoI
-            tmp.iloc[:,8] = piso/sum(piso)
-            
-        ### computing RT score
-        pRT = [pRTNone]*len(tmp.index)
-        RTranges = list(tmp['RT range'])
-
-        for r in range(0,len(RTranges)):
-            if RTranges[r]!=None:
-                rtrange = RTranges[r].split(';')
-                rtrange = [float(i) for i in rtrange]
-                if rtm >= rtrange[0] and rtm <= rtrange[1]:
-                    pRT[r]=1
-                else:
-                    pRT[r]=pRTout
-
-
-        ### computing posteriors integrating iso score and pk and RTscore
-        p1 = tmp.iloc[:,8] 
-        p1 = [1 if v is None else v for v in p1]# isopattern score
-        pks = [1 if v is None else v for v in pks]# previous knowledge score
-        post = [a*b*c*d for a,b,c,d in zip(priors,p1,pks,pRT)]
-        post = [x / sum(post) for x in post]
-        tmp.iloc[:,11] = post
-        tmp = tmp.sort_values(by=['post'], ascending=False)
-    else:
-        tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
-                       'fragmentation pattern score':[None],'prior':[1],'post':[1]})
-    tmp.index=range(0,len(tmp.index))    
-    return(tmp)
 
 
 def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,
-ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7):
-    """Annotation of the dataset base on the MS1 and MS2 information. Prior probabilities are based on mass only, while post probabilities
-       are based on mass, RT, previous knowledge and isotope patterns.
-    Inputs:
-        df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
-        dfMS2: pandas dataframe containing the MS2 data. It must contain 3 columns
-                -id: an unique id for each feature for which the MS2 spectrum was acquired (same as in df)
-                -spectrum: string containing the spectrum inforamtion in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
-                -ev: collision energy used to aquire the fragmentation spectrum
-        allAdds: pandas dataframe containing the information on all the possible adducts given the database. It should
-                 be the output of either ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
-        DBMS2: pandas dataframe containing the database containing the MS2 information
-        ppm: accuracy of the MS instrument used
-        me: accurate mass of the electron. Default 5.48579909065e-04
-        ratiosd: default 0.9. It represents the acceptable ratio between predicted intensity and observed intesity of isotopes.
-                 it is used to compute the shape parameters of the lognormal distribution used to calculate the isotope pattern
-                 scores as sqrt(1/ratiosd)
-        ppmunk: ppm associated to the 'unknown' annotation. If not provided equal to ppm.
-        ratiounk: isotope ratio associated to the 'unknown' annotation. If not provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to 2*ppm
-        pRTNone: Multiplicative factor for the RT if no RTrange present in the database. If not provided equal to 0.8
-        pRTout: Multiplicative factor for the RT if measured RT is outside the RTrange present in the database.
-                If not provided equal to 0.4
-        mzdCS: maximum mz difference allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of ppmCS, this must be set to 0. Default 0.
-        ppmCS: maximum ppm allowed when computing cosine similarity scores. If one wants to use this parameter
-               instead of mzdCS, this must be set to 0. Default 10.
-        CSunk: cosine similarity score associated with the 'unknown' annotation. Default 0.7
-    Output:
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-    """
-    print("annotating based on MS1 and MS2 information....")
-    start = time.time()
-    if ppmunk is None:
-        ppmunk = ppm
-    if ppmthr is None:
-        ppmthr = 2*ppm
-    if ratiounk is None:
-        ratiounk = 0.5
-    if pRTNone is None:
-        pRTNone = 0.8
-    if pRTout is None:
-        pRTout = 0.4
-    annotations={}
-    ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
-    ind.sort()
-    sigmaln = math.sqrt(1/ratiosd)
-    data=[]
-    for k in ind:
-        data.append(MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k))
-    keys = list(df.iloc[ind,0])
-    annotations = dict(zip(keys, data))
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
-    return(annotations)       
-
-
-def MSMSannotation_Parallel(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,ratiosd=0.9,ppmunk=None, ratiounk=None,
 ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
     """Annotation of the dataset base on the MS1 and MS2 information. Prior probabilities are based on mass only, while post probabilities
-       are based on mass, RT, previous knowledge and isotope patterns - parallelized version.
+       are based on mass, RT, previous knowledge and isotope patterns.
     Inputs:
         df: pandas dataframe containg the MS1 data. It should be the output of the function ipa.map_isotope_patterns()
         dfMS2: pandas dataframe containing the MS2 data. It must contain 3 columns
@@ -639,160 +389,60 @@ ppmthr=None,pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,ncores=1):
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
     """
-    print("annotating based on MS1 and MS2 information....")
-    start = time.time()
-    if ppmunk is None:
-        ppmunk = ppm
-    if ppmthr is None:
-        ppmthr = 2*ppm
-    if ratiounk is None:
-        ratiounk = 0.5
-    if pRTNone is None:
-        pRTNone = 0.8
-    if pRTout is None:
-        pRTout = 0.4
-    annotations={}
-    ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
-    ind.sort()
-    sigmaln = math.sqrt(1/ratiosd)
-    pool_obj = multiprocessing.Pool(ncores)
-    data = pool_obj.map(partial(MSMS_ann_iter,df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln),ind)
-    pool_obj.terminate()
-    keys = list(df.iloc[ind,0])
-    annotations = dict(zip(keys, data))
-    end = time.time()
-    print(round(end - start,1), 'seconds elapsed')
-    return(annotations)        
-
-def MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
-    mm= df.iloc[k,2]
-    rtm=df.iloc[k,3]
-    ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
-    hits = util.which(abs(ppms)<=ppmthr)
-    priors = list(ppms[hits].copy())
-    priors.append(ppmunk)
-    priors = stats.norm(0, ppm/2).pdf(priors)
-    pks = list(allAdds.pk[hits].copy())
-    pks.append(1)
-    priors=priors/sum(priors)
-    if len(hits)>0: #have to add the unknowm
-        tmp = allAdds.iloc[hits,[0,1,3,2,5,4,6]].copy()
-        tmp = tmp.rename(columns={'RT':'RT range'})
-        tmp['ppm'] = ppms[hits]
-        tmp['isotope pattern score'] = [None]*len(hits)
-        tmp['fragmentation pattern score'] = [None]*len(hits)
-        tmp['prior'] = [None]*len(hits)
-        tmp['post'] = [None]*len(hits)
-        uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],
-                       'isotope pattern score':[None],
-                       'fragmentation pattern score':[None],'prior':[None],'post':[None]})
-        tmp=pandas.concat([tmp,uk])
-        ### compute isotope pattern scores
-        relid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),1])[0]
-        isoid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),6])[0]
-        tmp.iloc[:,10] = priors
-        if isoid is not None:
-            indiso = list(set(util.which(df.iloc[:,1]==relid)) & set(util.which(df.iloc[:,6]==isoid)))
-            ISm = df.iloc[indiso,[2,4]]
-            ### computing isotope patterns scores
-            pisoM=[]
-            pisoI=[]
-            for isp in range(0,len(hits)):
-                mtmp = molmass.Formula(tmp.iloc[isp,2])
-                ch = tmp.iloc[isp,5]
-                ISt = mtmp.spectrum()
-                ISt = pandas.DataFrame(ISt).transpose()
-                if(len(ISt.index)<len(ISm.index)):
-                    pisoM.append(0)
-                    pisoI.append(0)
-                else:
-                    if ch>0:
-                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) - me
-                    else:
-                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) + me
-
-                    ISt=ISt.sort_values(by=[0])
-                    ISm=ISm.sort_values(by=['mzs'])
-                    ISm.iloc[:,1] = ISm.iloc[:,1]/max(ISm.iloc[:,1])
-                    ISt = ISt.iloc[range(0,len(ISm.index)),:]
-                    ISt.iloc[:,1] = ISt.iloc[:,1]/max(ISt.iloc[:,1])
-                    pMs = []
-                    pIs = []
-                    for ps in range(1,len(ISm.index)):
-                        ppmk =((ISt.iloc[ps,0]-ISm.iloc[ps,0])/ISt.iloc[ps,0])*(10**6)
-                        pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
-                        pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
-
-                    pisoM.append(sum(pMs))
-                    pisoI.append(sum(pIs))
-            ###adding scores for unknown
-            pisoM.append(sum([stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0)]*len(ISm.index)))
-            pisoI.append(sum([stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2))]*len(ISm.index)))    
-            pisoM = pisoM/sum(pisoM)
-            pisoI = pisoI/sum(pisoI)
-            piso = pisoM*pisoI
-            tmp.iloc[:,8] = piso/sum(piso)
-            
-        ### computing RT score
-        pRT = [pRTNone]*len(tmp.index)
-        RTranges = list(tmp['RT range'])
-
-        for r in range(0,len(RTranges)):
-            if RTranges[r]!=None:
-                rtrange = RTranges[r].split(';')
-                rtrange = [float(i) for i in rtrange]
-                if rtm >= rtrange[0] and rtm <= rtrange[1]:
-                    pRT[r]=1
-                else:
-                    pRT[r]=pRTout
-
-        ### if for this id I have measured fragmentation spectrum (or spectra) and I have info in the DBMS2 for the possible hits I compute the fragementation score!
-        ### add code here!
-        mzid = df['ids'][k] ## getting the mzid from the dataset
-        ms2inds = list(allAdds['MS2'][hits]) ## getting the MS2 DB ids 
-        ### I need to do anything only if the mzid is present in the dfMS2 AND if I have and ms2inds different than None
-        if mzid in list(dfMS2['id']) and (len(ms2inds)-ms2inds.count(None))>0:
-            Msps = dfMS2[dfMS2['id']==mzid] ### getting the measured spectra for this id
-            tmp.iloc[len(hits),9]=CSunk
-            for h in range(0,len(hits)):
-                #### look for the spectra in the database
-                MS2id=ms2inds[h]
-                CS=[]
-                for s in range(0,len(Msps.index)):
-                    Msp = Msps.iloc[s,1]
-                    ev = Msps.iloc[s,2]
-                    precType = allAdds['adduct'][hits[h]]
-                    DBsp = DBMS2[(DBMS2['MonaID']==MS2id) & (DBMS2['precursorType']==precType) & (DBMS2['collision.energy']==ev)]['spectrum']
-                    if len(DBsp)>0:
-                        DBsp = DBsp.item()
-                        CS.append(MS2compare.cosine_similarity(DBsp,Msp,mzdCS,ppmCS))
-                    else:
-                        CS.append(0.0)
-                CS = max(CS)
-                if CS==0:
-                    CS=CSunk
-                tmp.iloc[h,9]=CS
-            
-
-        ### computing posteriors integrating iso score and pk and RTscore and MS2 score
-        p1 = tmp.iloc[:,8]
-        pMS2 = tmp.iloc[:,9]
-        pMS2 = [CSunk if v is None else v for v in pMS2]# fragmentation score remove none
-        pMS2 = [x / sum(pMS2) for x in pMS2] # normalize fragmentation scores
-        p1 = [1 if v is None else v for v in p1]# isopattern score
-        pks = [1 if v is None else v for v in pks]# previous knowledge score
-        post = [a*b*c*d*e for a,b,c,d,e in zip(priors,p1,pks,pRT,pMS2)]
-        post = [x / sum(post) for x in post]
-        tmp.iloc[:,11] = post
-        tmp = tmp.sort_values(by=['post'], ascending=False)
-            
+    if ncores==1:
+        print("annotating based on MS1 and MS2 information....")
+        start = time.time()
+        if ppmunk is None:
+            ppmunk = ppm
+        if ppmthr is None:
+            ppmthr = 2*ppm
+        if ratiounk is None:
+            ratiounk = 0.5
+        if pRTNone is None:
+            pRTNone = 0.8
+        if pRTout is None:
+            pRTout = 0.4
+        annotations={}
+        ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
+        ind.sort()
+        sigmaln = math.sqrt(1/ratiosd)
+        data=[]
+        for k in ind:
+            data.append(iterations.MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k))
+        keys = list(df.iloc[ind,0])
+        annotations = dict(zip(keys, data))
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
+    elif ncores>1:
+        print("annotating based on MS1 and MS2 information - Parallelized...")
+        start = time.time()
+        if ppmunk is None:
+            ppmunk = ppm
+        if ppmthr is None:
+            ppmthr = 2*ppm
+        if ratiounk is None:
+            ratiounk = 0.5
+        if pRTNone is None:
+            pRTNone = 0.8
+        if pRTout is None:
+            pRTout = 0.4
+        annotations={}
+        ind = util.which(df.iloc[:,5]=='bp')+ util.which(df.iloc[:,5]=='potential bp') + util.whichNone(df.iloc[:,5])
+        ind.sort()
+        sigmaln = math.sqrt(1/ratiosd)
+        pool_obj = multiprocessing.Pool(ncores)
+        data = pool_obj.map(partial(iterations.MSMS_ann_iter,df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln),ind)
+        pool_obj.terminate()
+        keys = list(df.iloc[ind,0])
+        annotations = dict(zip(keys, data))
+        end = time.time()
+        print(round(end - start,1), 'seconds elapsed')
     else:
-        tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
-                       'fragmentation pattern score':[None],'prior':[1],'post':[1]})
-    tmp.index=range(0,len(tmp.index)) 
-    return(tmp)
+        raise ValueError("ncores must be >=1")
+
+    return(annotations)       
+
+
 
 def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,all_out=False,zs=None):
     """Gibbs sampler considering only adduct connections. The function computes the posterior probabilities
@@ -851,7 +501,7 @@ def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,all_out=Fal
     
     indk = list(range(0,len(ks)))
     for it in tqdm(range(0,noits), desc = 'Gibbs Sampler Progress Bar'):
-        ca, ca_id = gibbs_sampler_add_iter(indk,ks,rids,annotations,ca_id,ca,delta_add,it)
+        ca, ca_id = iterations.gibbs_sampler_add_iter(indk,ks,rids,annotations,ca_id,ca,delta_add,it)
         zs.append(ca.copy())          
             
     zsdf = pandas.DataFrame(zs).transpose()
@@ -886,67 +536,6 @@ def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,all_out=Fal
     if all_out:
         return(zs)
 
-
-def gibbs_sampler_add_iter(indk,ks,rids,annotations,ca_id,ca,delta_add,it):
-    random.shuffle(indk) #### I need to randomize the order I use to go through each mass in each iteration
-    for i in indk: 
-        k = ks[i]
-        rid=rids[i]
-        tmp = annotations[k] ### get the annotation table for this mass
-        p = list(tmp['post']) ### get the prior probabilities from the annotation table.
-        p_add = [0]*len(tmp.index) ### initialize the p_add vector
-        ca_id2=[] # contains the the current annotation ids for the masses with the same the relation id
-        for r in range(0,len(rids)):
-            if rids[r]==rid and r!=k:
-                ca_id2.append(ca_id[r]) ## 
-
-        #padd = [ca_id2.count(x) for x in idcps]
-        for cp in range(0,len(p_add)): ###populating p_add by counting add connections
-            idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
-            p_add[cp] = ca_id2.count(idcp)## count the number of add connections
-        p_add=[x+delta_add for x in p_add] ###computing the actual p_add 1/2
-        p_add=[x/sum(p_add) for x in p_add] ###computing the actual p_add 2/2
-        p0= [a * b for a, b in zip(p, p_add)] ### merging pbio and prior
-        p0=[x/sum(p0) for x in p0] ## normalize merged probabilities
-        a_list = list(range(0,len(p0))) ### I used this as vector of assignments
-        c=random.choices(a_list, p0) ### randomly choose an annotation based on probabilities on merged prob
-        ca[i] = c[0] # update current annotation
-        ca_id[i] = tmp.iloc[c,0].item() # update current annotation id
-    return(ca, ca_id)
-
-
-
-
-def bio_single_iter_reactions(all_ids_DB,all_rs_DB,id1,id2):
-    r1= all_rs_DB[all_ids_DB.index(id1)]
-    r2= all_rs_DB[all_ids_DB.index(id2)]
-    r1=r1.split()
-    r2=r2.split()
-    out = len(set.intersection(set(r1),set(r2)))
-    if out >0:
-        return((id1,id2))
-    else:
-        return(('x','x'))
-
-
-
-
-
-def bio_single_iter_connections(all_ids_DB,all_forms_DB,conns,id1,id2):
-    f1= molmass.Formula(all_forms_DB[all_ids_DB.index(id1)])
-    f2= molmass.Formula(all_forms_DB[all_ids_DB.index(id2)])
-    diff= None
-    if util.check_ded(f1,f2):
-        diff = f1.__sub__(f2).formula
-    elif util.check_ded(f2,f1):
-        diff = f2.__sub__(f1).formula        
-    if diff in conns:
-        return((id1,id2))
-    else:
-        return(('x','x'))
-
-    
-    
     
 def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
                "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
@@ -958,101 +547,8 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H
                "C10H11N5O4","C10H14N2O10P2","C10H12N2O4","C5H5N2O2","C10H13N2O7P","C9H12N2O11P2",
                "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
                "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
-               "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"]):
-    """Compute matrix of biochemical connections. Either based on a list of possible connections in the form of a list of formulas or
-    based on the reactions present in the database.
-    Inputs:
-        DB: pandas dataframe containing the database against which the annotation is performed. The DB must
-            contain the following columns in this exact order (optional fields can contain None):
-                - id: unique id of the database entry (e.g., 'C00031') - necessary
-                - name: compund name (e.g., 'D-Glucose') - necessary
-                - formula: chemical formula (e.g., 'C6H12O6') - necessary
-                - inchi: inchi string - optional
-                - smiles: smiles string - optional
-                - RT: if known, retention time range (in seconds) where this compound is expected
-                      to elute (e.g., '30;60') - optional
-                - adductsPos: list of adducts that should be considered in postive mode for this entry (e.g.,'M+Na;M+H;M+') - necessary
-                - adductsNeg: list of adducts that should be considered in negative mode for this entry (e.g.,'M-H;M-2H') - necessary
-                - description: comments on the entry - optional
-                - pk: previous knowledge on the likelihood of this compoud to be present in the sample
-                      analyse. The value has to be between 1 (compound likely to be present in the sample)
-                      and 0 (compound cannot be present in the sample).
-                - MS2: id for the MS2 database entries related to this compound (optional)
-                - reactions: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028')-optional, but necessary if
-                  mode='reactions'.
-        annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
-                     unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
-                     Output of functions MS1annotation(), MS1annotation_Parallel(), MSMSannotation() or MSMSannotation_Parallel
-        mode: either 'reactions' (connections are computed based on the reactions present in the database) or 'connections' (connections are
-              computed based on the list of connections provided). Default 'reactions'.
-        connections: list of possible connections between compouds defined as formulas. Only necessary if mode='connections'. A list of common
-                     biotransformations is provided as default.
-    Output:
-        Bio: dataframe containing all the possible connections computed.
-    """
-    print("computing all possible biochemical connections")
-    start = time.time()
-    DB = DB.replace(numpy.nan,None)
-    DB.loc[DB.reactions==None,'reactions']=''
-        
-    ### getting the ids of all possible hits to the database
-    all_Ks = list(annotations.keys())
-    all_ids = []
-    for k in all_Ks:
-        all_ids= all_ids+annotations[k]['id'].tolist()
-    
-    all_ids = list(set(all_ids))
-    all_ids.remove('Unknown')
-    all_ids_DB = DB['id'].to_list()
-    Bio = []
-    
-    
-    
-    if mode=='connections':
-        print("considering the provided connections ...")
-        all_forms_DB = DB['formula'].to_list()
-        conns = []
-        for c in connections:
-            conns.append(molmass.Formula(c).formula)
-        
-        
-        for x,y in itertools.combinations(all_ids, 2):
-            Bio = Bio+[bio_single_iter_connections(all_ids_DB,all_forms_DB,connections,x,y)]
-
-
-    
-    elif mode=='reactions':
-        print("considering the reactions stored in the database ...")
-        all_rs_DB = DB['reactions'].to_list()
-        all_rs_DB= ['' if v is None else v for v in all_rs_DB]
-        for x,y in itertools.combinations(all_ids, 2):
-            Bio = Bio+[bio_single_iter_reactions(all_ids_DB,all_rs_DB,x,y)]
-
-
-    
-    else:
-        print('ERROR: mode can only be connections or reactions')
-        return
-
-    Bio = [i for i in Bio if i != ('x','x')]
-    Bio = pandas.DataFrame(Bio, index=None)
-    end = time.time()   
-    print(round(end - start,1), 'seconds elapsed')
-    return(Bio)
-
-
-def Compute_Bio_Parallel(DB, annotations, mode='reactions', connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
-               "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
-               "C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2","C11H10N2O","C9H9NO2",
-               "C5H9NO","C4H4O2","C3H5O","C10H12N5O6P","C10H15N2O3S","C10H14N2O2S","CH2ON",
-               "C21H34N7O16P3S","C21H33N7O15P3S","C10H15N3O5S","C5H7","C3H2O3","C16H30O",
-               "C8H8NO5P","CH3N2O","C5H4N5","C10H11N5O3","C10H13N5O9P2","C10H12N5O6P",
-               "C9H13N3O10P2","C9H12N3O7P","C4H4N3O","C10H13N5O10P2","C10H12N5O7P","C5H4N5O",
-               "C10H11N5O4","C10H14N2O10P2","C10H12N2O4","C5H5N2O2","C10H13N2O7P","C9H12N2O11P2",
-               "C9H11N2O8P","C4H3N2O2","C9H10N2O5","C2H3O2","C2H2O","C2H2","CO2","CHO2","H2O","H3O6P2",
-               "C2H4","CO","C2O2","H2","O","P","C2H2O","CH2","HPO3","NH2","PP","NH","SO3","N","C6H10O5",
                "C6H10O6","C5H8O4","C12H20O11","C6H11O8P","C6H8O6","C6H10O5","C18H30O15"], ncores=1):
-    """Compute matrix of biochemical connections. Parallelized version. Either based on a list of possible connections in the form of a list of formulas or
+    """Compute matrix of biochemical connections. Either based on a list of possible connections in the form of a list of formulas or
     based on the reactions present in the database.
     Inputs:
         DB: pandas dataframe containing the database against which the annotation is performed. The DB must
@@ -1084,54 +580,110 @@ def Compute_Bio_Parallel(DB, annotations, mode='reactions', connections = ["C3H5
     Output:
         Bio: dataframe containing all the possible connections computed.
     """
-    print("computing all possible biochemical connections")
-    start = time.time()
-    DB = DB.replace(numpy.nan,None)
-    DB.loc[DB.reactions==None,'reactions']=''
-
-    ### getting the ids of all possible hits to the database
-    all_Ks = list(annotations.keys())
-    all_ids = []
-    for k in all_Ks:
-        all_ids= all_ids+annotations[k]['id'].tolist()
-    
-    all_ids = list(set(all_ids))
-    all_ids.remove('Unknown')
-    all_ids_DB = DB['id'].to_list()
-    
-    
-    
-    if mode=='connections':
-        print("considering the provided connections ...")
-        all_forms_DB = DB['formula'].to_list()
-        conns = []
-        for c in connections:
-            conns.append(molmass.Formula(c).formula)
+    if ncores==1:
+        print("computing all possible biochemical connections")
+        start = time.time()
+        DB = DB.replace(numpy.nan,None)
+        DB.loc[DB.reactions==None,'reactions']=''
+            
+        ### getting the ids of all possible hits to the database
+        all_Ks = list(annotations.keys())
+        all_ids = []
+        for k in all_Ks:
+            all_ids= all_ids+annotations[k]['id'].tolist()
         
-        pool_obj = multiprocessing.Pool(ncores)
-        Bio = pool_obj.starmap(partial(bio_single_iter_connections,all_ids_DB,all_forms_DB,connections),itertools.combinations(all_ids, 2))
-        pool_obj.terminate()
-
+        all_ids = list(set(all_ids))
+        all_ids.remove('Unknown')
+        all_ids_DB = DB['id'].to_list()
+        Bio = []
+        
+        
+        
+        if mode=='connections':
+            print("considering the provided connections ...")
+            all_forms_DB = DB['formula'].to_list()
+            conns = []
+            for c in connections:
+                conns.append(molmass.Formula(c).formula)
+            
+            
+            for x,y in itertools.combinations(all_ids, 2):
+                Bio = Bio+[iterations.bio_single_iter_connections(all_ids_DB,all_forms_DB,connections,x,y)]
     
-    elif mode=='reactions':
-        print("considering the reactions stored in the database ...")
-        all_rs_DB = DB['reactions'].to_list()
-        all_rs_DB= ['' if v is None else v for v in all_rs_DB]
-        pool_obj = multiprocessing.Pool(ncores)
-        Bio = pool_obj.starmap(partial(bio_single_iter_reactions,all_ids_DB,all_rs_DB),itertools.combinations(all_ids, 2))
-        pool_obj.terminate()
-
     
+        
+        elif mode=='reactions':
+            print("considering the reactions stored in the database ...")
+            all_rs_DB = DB['reactions'].to_list()
+            all_rs_DB= ['' if v is None else v for v in all_rs_DB]
+            for x,y in itertools.combinations(all_ids, 2):
+                Bio = Bio+[iterations.bio_single_iter_reactions(all_ids_DB,all_rs_DB,x,y)]
+    
+    
+        
+        else:
+            print('ERROR: mode can only be connections or reactions')
+            return
+    
+        Bio = [i for i in Bio if i != ('x','x')]
+        Bio = pandas.DataFrame(Bio, index=None)
+        end = time.time()   
+        print(round(end - start,1), 'seconds elapsed')
+
+    elif ncores>1:
+        print("computing all possible biochemical connections")
+        start = time.time()
+        DB = DB.replace(numpy.nan,None)
+        DB.loc[DB.reactions==None,'reactions']=''
+    
+        ### getting the ids of all possible hits to the database
+        all_Ks = list(annotations.keys())
+        all_ids = []
+        for k in all_Ks:
+            all_ids= all_ids+annotations[k]['id'].tolist()
+        
+        all_ids = list(set(all_ids))
+        all_ids.remove('Unknown')
+        all_ids_DB = DB['id'].to_list()
+        
+        
+        
+        if mode=='connections':
+            print("considering the provided connections ...")
+            all_forms_DB = DB['formula'].to_list()
+            conns = []
+            for c in connections:
+                conns.append(molmass.Formula(c).formula)
+            
+            pool_obj = multiprocessing.Pool(ncores)
+            Bio = pool_obj.starmap(partial(iterations.bio_single_iter_connections,all_ids_DB,all_forms_DB,connections),itertools.combinations(all_ids, 2))
+            pool_obj.terminate()
+    
+        
+        elif mode=='reactions':
+            print("considering the reactions stored in the database ...")
+            all_rs_DB = DB['reactions'].to_list()
+            all_rs_DB= ['' if v is None else v for v in all_rs_DB]
+            pool_obj = multiprocessing.Pool(ncores)
+            Bio = pool_obj.starmap(partial(iterations.bio_single_iter_reactions,all_ids_DB,all_rs_DB),itertools.combinations(all_ids, 2))
+            pool_obj.terminate()
+    
+        
+        else:
+            print('ERROR: mode can only be connections or reactions')
+            return
+    
+        
+        Bio = [i for i in Bio if i != ('x','x')]
+        Bio = pandas.DataFrame(Bio, index=None)
+        end = time.time()   
+        print(round(end - start,1), 'seconds elapsed')
     else:
-        print('ERROR: mode can only be connections or reactions')
-        return
-
-    
-    Bio = [i for i in Bio if i != ('x','x')]
-    Bio = pandas.DataFrame(Bio, index=None)
-    end = time.time()   
-    print(round(end - start,1), 'seconds elapsed')
+        raise ValueError("ncores must be >=1")
+        
     return(Bio)
+
+
 
 
 
@@ -1195,7 +747,7 @@ def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,all_out
     
     indk = list(range(0,len(ks)))
     for it in tqdm(range(0,noits), desc = 'Gibbs Sampler Progress Bar'):
-        ca, ca_id = gibbs_sampler_bio_iter(indk,ks,annotations,Bio,ca_id,ca,delta_bio,it)
+        ca, ca_id = iterations.gibbs_sampler_bio_iter(indk,ks,annotations,Bio,ca_id,ca,delta_bio,it)
         zs.append(ca.copy())          
             
     zsdf = pandas.DataFrame(zs).transpose()
@@ -1233,30 +785,6 @@ def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,all_out
 
 
 
-def gibbs_sampler_bio_iter(indk,ks,annotations,Bio,ca_id,ca,delta_bio,it):
-    random.shuffle(indk)
-    for i in indk:
-        k=ks[i]
-        tmp = annotations[k]
-        p = list(tmp['post']) ### get the prior probabilities from the annotation table.
-        p_bio = [0]*len(tmp.index) ### initialize the p_bio vector
-        ca_id2=ca_id.copy() # contains the the current annotation
-        del ca_id2[i] # without the annotation for the mass considered 
-
-        for cp in range(0,len(p_bio)): ###populating p_bio by counting bio connections
-            idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_bio
-            idcp_list = [idcp]*len(ca_id2)
-            A = list(zip(idcp_list,ca_id2))+list(zip(ca_id2,idcp_list))
-            p_bio[cp] = len(set.intersection(set(Bio),set(A)))
-        p_bio=[x+delta_bio for x in p_bio] ###computing the actual p_bio 1/2
-        p_bio=[x/sum(p_bio) for x in p_bio] ###computing the actual p_bio 2/2
-        p0= [a * b for a, b in zip(p, p_bio)] ### merging pbio and prior
-        p0=[x/sum(p0) for x in p0] ## normalize merged probabilities
-        a_list = list(range(0,len(p0))) ### I used this as vector of assignments
-        c=random.choices(a_list, p0) ### randomly choose an annotation based on probabilities on merged prob
-        ca[i] = c[0] # update current annotation
-        ca_id[i] = tmp.iloc[c,0].item() # update current annotation id
-    return(ca, ca_id)
 
 
 
@@ -1321,7 +849,7 @@ def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,del
     
     indk = list(range(0,len(ks)))
     for it in tqdm(range(0,noits), desc = 'Gibbs Sampler Progress Bar'):
-        ca, ca_id = gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,delta_add,it)
+        ca, ca_id = iterations.gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,delta_add,it)
         zs.append(ca.copy())          
             
     zsdf = pandas.DataFrame(zs).transpose()
@@ -1356,39 +884,6 @@ def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,del
     print('Done - ',round(end - start,1), 'seconds elapsed')
     if all_out:
         return(zs)
-
-def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,delta_add,it):
-    random.shuffle(indk) #### I need to randomize the order I use to go through each mass in each iteration
-    for i in indk: 
-        k = ks[i]
-        rid=rids[i]
-        tmp = annotations[k] ### get the annotation table for this mass
-        p = list(tmp['post']) ### get the prior probabilities from the annotation table.
-        p_bio = [0]*len(tmp.index) ### initialize the p_add vector
-        p_add = [0]*len(tmp.index) ### initialize the p_add vector
-        ca_id2=[] # contains the the current annotation ids for the masses with the same the relation id
-        for r in range(0,len(rids)):
-            if rids[r]==rid and r!=k:
-                ca_id2.append(ca_id[r]) ## 
-
-        #padd = [ca_id2.count(x) for x in idcps]
-        for cp in range(0,len(p_add)): ###populating p_add by counting add connections
-            idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
-            p_add[cp] = ca_id2.count(idcp)## count the number of add connections
-            idcp_list = [idcp]*len(ca_id2)
-            A = list(zip(idcp_list,ca_id2))+list(zip(ca_id2,idcp_list))
-            p_bio[cp] = len(set.intersection(set(Bio),set(A)))
-        p_add=[x+delta_add for x in p_add] ###computing the actual p_add 1/2
-        p_add=[x/sum(p_add) for x in p_add] ###computing the actual p_add 2/2
-        p_bio=[x+delta_bio for x in p_bio] ###computing the actual p_bio 1/2
-        p_bio=[x/sum(p_bio) for x in p_bio] ###computing the actual p_bio 2/2
-        p0= [a * b * c for a, b, c in zip(p, p_add, p_bio)] ### merging pbio and prior
-        p0=[x/sum(p0) for x in p0] ## normalize merged probabilities
-        a_list = list(range(0,len(p0))) ### I used this as vector of assignments
-        c=random.choices(a_list, p0) ### randomly choose an annotation based on probabilities on merged prob
-        ca[i] = c[0] # update current annotation
-        ca_id[i] = tmp.iloc[c,0].item() # update current annotation id
-    return(ca, ca_id)
 
 
 def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,burn=None,delta_add=None,delta_bio=None,Bio=None,
@@ -1475,36 +970,24 @@ pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,connections = ["C3H5NO", "C6H12N4O", 
     # mapping isotopes
     map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)
     # computing all adducts
-    if ncores>1:
-        allAdds = compute_all_adducts_Parallel(adductsAll= adductsAll, DB=DB, ionisation=ionisation ,ncores=ncores)
-    else:
-        allAdds = compute_all_adducts(adductsAll= adductsAll, DB=DB, ionisation=ionisation)
+   
+    allAdds = compute_all_adducts(adductsAll= adductsAll, DB=DB, ionisation=ionisation ,ncores=ncores)
+   
 
     # computing priors
     if (dfMS2 is None) or (DBMS2 is None):
-        if ncores>1:
-            annotations = MS1annotation_Parallel(df=df,allAdds=allAdds,ppm=ppm,me=me,ratiosd=ratiosd,ppmunk=ppmunk,
-            ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,ncores=ncores)
-        else:
-            annotations = MS1annotation(df=df,allAdds=allAdds,ppm=ppm,me=me,ratiosd=ratiosd,ppmunk=ppmunk,
-            ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout)
+        annotations = MS1annotation(df=df,allAdds=allAdds,ppm=ppm,me=me,ratiosd=ratiosd,ppmunk=ppmunk,
+        ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,ncores=ncores)
     else:
-        if ncores>1:
-            annotations = MSMSannotation_Parallel(df=df,dfMS2=dfMS2,allAdds=allAdds,DBMS2=DBMS2,ppm=ppm,me=me,ratiosd=ratiosd,
-            ppmunk=ppmunk,ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,mzdCS=mzdCS,ppmCS=ppmCS,
-            CSunk=CSunk,ncores=ncores)
-        else:
-            annotations = MSMSannotation(df=df,dfMS2=dfMS2,allAdds=allAdds,DBMS2=DBMS2,ppm=ppm,me=me,ratiosd=ratiosd,
-            ppmunk=ppmunk,ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,mzdCS=mzdCS,ppmCS=ppmCS,
-            CSunk=CSunk)
+    
+        annotations = MSMSannotation(df=df,dfMS2=dfMS2,allAdds=allAdds,DBMS2=DBMS2,ppm=ppm,me=me,ratiosd=ratiosd,
+        ppmunk=ppmunk,ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,mzdCS=mzdCS,ppmCS=ppmCS,
+        CSunk=CSunk,ncores=ncores)
 
     # computing Bio matrix (if necessary)
     if (Bio is None) and (delta_bio is not None):
-        if ncores>1:
-            Bio=Compute_Bio_Parallel(DB=DB,annotations=annotations,mode=mode,connections=connections,ncores=ncores)
-        else:
-            Bio=Compute_Bio(DB=DB,annotations=annotations,mode=mode,connections=connections)
-
+        Bio=Compute_Bio(DB=DB,annotations=annotations,mode=mode,connections=connections,ncores=ncores)
+        
     # Gibbs sampler (if needed). Which one based on the inputs
     if (Bio is not None) and (delta_bio is not None) and (delta_add is not None):
         Gibbs_sampler_bio_add(df=df,annotations=annotations,Bio=Bio,noits=noits,burn=burn,delta_bio=delta_bio,delta_add=delta_add)

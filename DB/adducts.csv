@@ -1,4 +1,4 @@
-Name,calc,Charge,Mult,Mass,Ion_mode,Formula_add,Formula_ded,Multi
+name,calc,Charge,Mult,Mass,Ion_mode,Formula_add,Formula_ded,Multi
 M+H,M+1.007276,1,1,1.007276,positive,H1,FALSE,1
 M+NH4,M+18.033823,1,1,18.033823,positive,N1H4,FALSE,1
 M+Na,M+22.989218,1,1,22.989218,positive,Na1,FALSE,1

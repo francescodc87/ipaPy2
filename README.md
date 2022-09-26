@@ -7,6 +7,9 @@ ipaPy2 requires Python 3.9 or higher
 
 ### Install via pip (recommended )
 NOT THERE YET!
+```
+pip install ipaPy2
+```
 
 ### Compiling from source (macOS)
 1. create a folder in which you want to put the library

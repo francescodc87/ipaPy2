@@ -128,8 +128,8 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
                         * potential bp|isotope: isotope of one potential bp
         - isotope pattern: feature used to cluster the different isotope
                             patterns within the same relation id
-        - charge: predicted charge based on the isotope pattern (1,2,3 or
-                  -1,-2,-3 are the only values allowed)
+        - charge: predicted charge based on the isotope pattern (1,2,3,4,5 or
+                  -1,-2,-3,-4,-5 are the only values allowed)
     """
     print("mapping isotope patterns ....")
     start = time.time()
@@ -153,28 +153,33 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
                 ppm1 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+isoDiff))/(dfg.iloc[k,2]+isoDiff))*(10**6))
                 ppm2 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/2)))/(dfg.iloc[k,2]+(isoDiff/2)))*(10**6))
                 ppm3 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/3)))/(dfg.iloc[k,2]+(isoDiff/3)))*(10**6))
-                ppm4 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/4)))/(dfg.iloc[k,2]+(isoDiff/3)))*(10**6))
-                ppm5 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/5)))/(dfg.iloc[k,2]+(isoDiff/3)))*(10**6))
+                ppm4 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/4)))/(dfg.iloc[k,2]+(isoDiff/4)))*(10**6))
+                ppm5 = abs(((dfg.iloc[0:(len(dfg.index)),2]-(dfg.iloc[k,2]+(isoDiff/5)))/(dfg.iloc[k,2]+(isoDiff/5)))*(10**6))
                 indiso1 = util.which(ppm1 <= ppm)
+                if k in indiso1: indiso1.remove(k)
                 indiso2 = util.which(ppm2 <= ppm)
+                if k in indiso2: indiso2.remove(k)
                 indiso3 = util.which(ppm3 <= ppm)
+                if k in indiso3: indiso3.remove(k)
                 indiso4 = util.which(ppm4 <= ppm)
+                if k in indiso4: indiso4.remove(k)
                 indiso5 = util.which(ppm5 <= ppm)
+                if k in indiso5: indiso5.remove(k)
                 if len(indiso5) >0:
                     dfg.iloc[k,5] = "isotope"
                     dfg.iloc[indiso5,5] = "isotope"
                     dfg.iloc[k,6] = c
                     dfg.iloc[indiso5,6] = c
-                    dfg.iloc[k,7] = 3*ionisation
-                    dfg.iloc[indiso5,7] = 3*ionisation
+                    dfg.iloc[k,7] = 5*ionisation
+                    dfg.iloc[indiso5,7] = 5*ionisation
                     f2=True
                 elif len(indiso4) > 0:
                     dfg.iloc[k,5] = "isotope"
                     dfg.iloc[indiso4,5] = "isotope"
                     dfg.iloc[k,6] = c
                     dfg.iloc[indiso4,6] = c
-                    dfg.iloc[k,7] = 3*ionisation
-                    dfg.iloc[indiso4,7] = 3*ionisation
+                    dfg.iloc[k,7] = 4*ionisation
+                    dfg.iloc[indiso4,7] = 4*ionisation
                     f2=True
                 elif len(indiso3) > 0:
                     dfg.iloc[k,5] = "isotope"
@@ -234,7 +239,6 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
         raise Exception("""'map_isotope_patterns' method can only be applied to pandas dataframe.""")
     end = time.time()
     print(round(end - start,1), 'seconds elapsed')
-
 
 
 def compute_all_adducts(adductsAll, DB, ionisation=1, ncores=1):

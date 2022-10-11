@@ -565,7 +565,7 @@ Below is reported an example:
 
 
 ```python
-df1=pd.read_csv('example/df_test_pos.csv')
+df1=pd.read_csv('ExampleDatasets/README/df_test_pos.csv')
 df1.head()
 ```
 
@@ -638,7 +638,7 @@ Such dataframe should be organized as follows:
 
 
 ```python
-df2=pd.read_csv('example/df_test_pos_not_clustered.csv')
+df2=pd.read_csv('ExampleDatasets/README/df_test_pos_not_clustered.csv')
 df2.head()
 ```
 
@@ -880,7 +880,7 @@ Below is reported an example:
 
 
 ```python
-dfMS2=pd.read_csv('example/MS2data_example.csv')
+dfMS2=pd.read_csv('ExampleDatasets/README/MS2data_example.csv')
 dfMS2.head()
 ```
 

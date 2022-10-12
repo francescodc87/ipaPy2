@@ -748,7 +748,7 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO",
         print(round(end - start,1), 'seconds elapsed')
 
     elif ncores>1:
-        print("computing all possible biochemical connections")
+        print("computing all possible biochemical connections - Parallelized")
         start = time.time()
         DB = DB.replace(numpy.nan,None)
         DB.loc[DB.reactions==None,'reactions']=''

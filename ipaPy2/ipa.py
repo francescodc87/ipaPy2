@@ -632,7 +632,7 @@ def Gibbs_sampler_add(df,annotations,noits=100,burn=None,delta_add=1,
         return(zs)
 
     
-def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO",
+def Compute_Bio(DB, annotations=None, mode='reactions', connections = ["C3H5NO",
                "C6H12N4O", "C4H6N2O2", "C4H5NO3", "C3H5NOS", "C6H10N2O3S2",
                "C5H7NO3","C5H8N2O2","C2H3NO","C6H7N3O","C6H11NO","C6H11NO",
                "C6H12N2O","C5H9NOS","C9H9NO","C5H7NO","C3H5NO2","C4H7NO2",
@@ -704,13 +704,17 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO",
         DB.loc[DB.reactions==None,'reactions']=''
             
         ### getting the ids of all possible hits to the database
-        all_Ks = list(annotations.keys())
-        all_ids = []
-        for k in all_Ks:
-            all_ids= all_ids+annotations[k]['id'].tolist()
-        
-        all_ids = list(set(all_ids))
-        all_ids.remove('Unknown')
+        if annotations is None:
+            all_ids = DB['id'].to_list()
+        else:
+            all_Ks = list(annotations.keys())
+            all_ids = []
+            for k in all_Ks:
+                all_ids= all_ids+annotations[k]['id'].tolist()
+
+            all_ids = list(set(all_ids))
+            all_ids.remove('Unknown')
+            
         all_ids_DB = DB['id'].to_list()
         Bio = []
         
@@ -752,18 +756,21 @@ def Compute_Bio(DB, annotations, mode='reactions', connections = ["C3H5NO",
         start = time.time()
         DB = DB.replace(numpy.nan,None)
         DB.loc[DB.reactions==None,'reactions']=''
-    
+        
         ### getting the ids of all possible hits to the database
-        all_Ks = list(annotations.keys())
-        all_ids = []
-        for k in all_Ks:
-            all_ids= all_ids+annotations[k]['id'].tolist()
-        
-        all_ids = list(set(all_ids))
-        all_ids.remove('Unknown')
+        if annotations is None:
+            all_ids = DB['id'].to_list()
+        else:
+            all_Ks = list(annotations.keys())
+            all_ids = []
+            for k in all_Ks:
+                all_ids= all_ids+annotations[k]['id'].tolist()
+
+            all_ids = list(set(all_ids))
+            all_ids.remove('Unknown')
+            
         all_ids_DB = DB['id'].to_list()
-        
-        
+
         
         if mode=='connections':
             print("considering the provided connections ...")

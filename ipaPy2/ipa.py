@@ -679,12 +679,16 @@ def Compute_Bio(DB, annotations=None, mode='reactions', connections = ["C3H5NO",
         - reactions: list of reactions ids involving this compound
                     (e.g., 'R00010 R00015 R00028')-optional, but necessary if 
                     mode='reactions'.
-    annotations: a dictonary containg all the possible annotations for the
+    annotations: If equal to None (default) all entries in the DB are conisdered 
+                (used to pre-compute the Bio matrix), alternatively it should be
+                a dictonary containg all the possible annotations for the
                 measured features. The keys of the dictionay are the unique ids
                 for the features present in df. For each feature, the
                 annotations are summarized in a pandas dataframe. Output of
                 functions MS1annotation(), MS1annotation_Parallel(),
-                MSMSannotation() or MSMSannotation_Parallel
+                MSMSannotation() or MSMSannotation_Parallel. In this case
+                only the entries currently considered as possible annotations
+                are used.
     mode: either 'reactions' (connections are computed based on the reactions
           present in the database) or 'connections' (connections are computed
           based on the list of connections provided). Default 'reactions'.

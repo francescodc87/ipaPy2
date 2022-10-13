@@ -858,6 +858,22 @@ def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
     start = time.time()
     print("computing posterior probabilities including biochemical connections")
     print("initialising sampler ...")
+    all_ids = []
+    for k in annotations.keys():
+        tmp = annotations[k]
+        all_ids=all_ids+list(tmp['id'])
+    all_ids=list(set(all_ids))
+
+    ind = []
+    for k in range(0,len(Bio.index)):
+        if Bio.iloc[k,0] in all_ids and Bio.iloc[k,1] in all_ids:
+            ind.append(k)
+        
+    Bio=Bio.iloc[ind,:]
+    del all_ids
+    del ind
+    del tmp
+    
     noits = int(noits) 
     
     ks = list(annotations.keys())
@@ -983,8 +999,24 @@ def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
     start = time.time()
     print("computing posterior probabilities including biochemical and adducts connections")
     print("initialising sampler ...")
+    all_ids = []
+    for k in annotations.keys():
+        tmp = annotations[k]
+        all_ids=all_ids+list(tmp['id'])
+    all_ids=list(set(all_ids))
+
+    ind = []
+    for k in range(0,len(Bio.index)):
+        if Bio.iloc[k,0] in all_ids and Bio.iloc[k,1] in all_ids:
+            ind.append(k)
+        
+    Bio=Bio.iloc[ind,:]
+    del all_ids
+    del ind
+    del tmp
+ 
     noits = int(noits) 
-    ks = list(annotations.keys())
+    ks = list(annotations.keys())    
     rids = [] #get a vector of relation ids associated with the annotated features
     for k in ks:
         rids.append(df[df['ids']==k]['rel.ids'].item())

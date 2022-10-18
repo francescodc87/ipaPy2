@@ -7,6 +7,7 @@ ipaPy2 requires Python 3.9 or higher
 
 ### Install via pip (recommended )
 NOT THERE YET!
+
 ```
 pip install ipaPy2
 ```
@@ -990,8 +991,8 @@ help(ipa.map_isotope_patterns)
                             * potential bp|isotope: isotope of one potential bp
             - isotope pattern: feature used to cluster the different isotope
                                 patterns within the same relation id
-            - charge: predicted charge based on the isotope pattern (1,2,3 or
-                      -1,-2,-3 are the only values allowed)
+            - charge: predicted charge based on the isotope pattern (1,2,3,4,5 or
+                      -1,-2,-3,-4,-5 are the only values allowed)
     
 
 
@@ -1766,10 +1767,10 @@ annotations[90]
       <td>1</td>
       <td>None</td>
       <td>-0.708479</td>
-      <td>0.331059</td>
+      <td>None</td>
       <td>0.7</td>
       <td>0.317329</td>
-      <td>0.520701</td>
+      <td>0.483401</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1781,10 +1782,10 @@ annotations[90]
       <td>1</td>
       <td>500;560</td>
       <td>-0.708479</td>
-      <td>0.331059</td>
+      <td>None</td>
       <td>0.7</td>
       <td>0.317329</td>
-      <td>0.260350</td>
+      <td>0.241701</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1796,10 +1797,10 @@ annotations[90]
       <td>1</td>
       <td>35;55</td>
       <td>-0.708479</td>
-      <td>0.331059</td>
+      <td>None</td>
       <td>0.584318</td>
       <td>0.317329</td>
-      <td>0.217325</td>
+      <td>0.201757</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1811,10 +1812,10 @@ annotations[90]
       <td>None</td>
       <td>None</td>
       <td>3.000000</td>
-      <td>0.006824</td>
+      <td>None</td>
       <td>0.7</td>
       <td>0.048013</td>
-      <td>0.001624</td>
+      <td>0.073141</td>
     </tr>
   </tbody>
 </table>
@@ -1887,11 +1888,13 @@ zs = ipa.Gibbs_sampler_add(df,annotations,noits=1000,delta_add=0.1, all_out=True
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 279.76it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 261.54it/s]
 
     parsing results ...
-    Done -  3.6 seconds elapsed
+    Done -  3.9 seconds elapsed
+
+
+    
 
 
 The function modifies the annotations dictionary by adding two additional columns to each dataframe:
@@ -1909,10 +1912,10 @@ ipa.Gibbs_sampler_add(df,annotations, noits=4000,delta_add=0.1,zs=zs)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:14<00:00, 278.46it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:14<00:00, 275.46it/s]
 
     parsing results ...
-    Done -  14.4 seconds elapsed
+    Done -  14.6 seconds elapsed
 
 
     
@@ -1965,8 +1968,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.453117</td>
-      <td>0.669407</td>
-      <td>1.986886e-204</td>
+      <td>0.677627</td>
+      <td>6.982488e-221</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1982,8 +1985,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.362494</td>
-      <td>0.269718</td>
-      <td>1.986886e-204</td>
+      <td>0.266830</td>
+      <td>6.982488e-221</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1999,8 +2002,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.181247</td>
-      <td>0.060431</td>
-      <td>1.986886e-204</td>
+      <td>0.055321</td>
+      <td>6.982488e-221</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2016,8 +2019,8 @@ annotations[501]
       <td>None</td>
       <td>0.056386</td>
       <td>0.003143</td>
-      <td>0.000444</td>
-      <td>1.986886e-204</td>
+      <td>0.000222</td>
+      <td>6.982488e-221</td>
     </tr>
   </tbody>
 </table>
@@ -2042,7 +2045,7 @@ help(ipa.Compute_Bio)
 
     Help on function Compute_Bio in module ipaPy2.ipa:
     
-    Compute_Bio(DB, annotations, mode='reactions', connections=['C3H5NO', 'C6H12N4O', 'C4H6N2O2', 'C4H5NO3', 'C3H5NOS', 'C6H10N2O3S2', 'C5H7NO3', 'C5H8N2O2', 'C2H3NO', 'C6H7N3O', 'C6H11NO', 'C6H11NO', 'C6H12N2O', 'C5H9NOS', 'C9H9NO', 'C5H7NO', 'C3H5NO2', 'C4H7NO2', 'C11H10N2O', 'C9H9NO2', 'C5H9NO', 'C4H4O2', 'C3H5O', 'C10H12N5O6P', 'C10H15N2O3S', 'C10H14N2O2S', 'CH2ON', 'C21H34N7O16P3S', 'C21H33N7O15P3S', 'C10H15N3O5S', 'C5H7', 'C3H2O3', 'C16H30O', 'C8H8NO5P', 'CH3N2O', 'C5H4N5', 'C10H11N5O3', 'C10H13N5O9P2', 'C10H12N5O6P', 'C9H13N3O10P2', 'C9H12N3O7P', 'C4H4N3O', 'C10H13N5O10P2', 'C10H12N5O7P', 'C5H4N5O', 'C10H11N5O4', 'C10H14N2O10P2', 'C10H12N2O4', 'C5H5N2O2', 'C10H13N2O7P', 'C9H12N2O11P2', 'C9H11N2O8P', 'C4H3N2O2', 'C9H10N2O5', 'C2H3O2', 'C2H2O', 'C2H2', 'CO2', 'CHO2', 'H2O', 'H3O6P2', 'C2H4', 'CO', 'C2O2', 'H2', 'O', 'P', 'C2H2O', 'CH2', 'HPO3', 'NH2', 'PP', 'NH', 'SO3', 'N', 'C6H10O5', 'C6H10O6', 'C5H8O4', 'C12H20O11', 'C6H11O8P', 'C6H8O6', 'C6H10O5', 'C18H30O15'], ncores=1)
+    Compute_Bio(DB, annotations=None, mode='reactions', connections=['C3H5NO', 'C6H12N4O', 'C4H6N2O2', 'C4H5NO3', 'C3H5NOS', 'C6H10N2O3S2', 'C5H7NO3', 'C5H8N2O2', 'C2H3NO', 'C6H7N3O', 'C6H11NO', 'C6H11NO', 'C6H12N2O', 'C5H9NOS', 'C9H9NO', 'C5H7NO', 'C3H5NO2', 'C4H7NO2', 'C11H10N2O', 'C9H9NO2', 'C5H9NO', 'C4H4O2', 'C3H5O', 'C10H12N5O6P', 'C10H15N2O3S', 'C10H14N2O2S', 'CH2ON', 'C21H34N7O16P3S', 'C21H33N7O15P3S', 'C10H15N3O5S', 'C5H7', 'C3H2O3', 'C16H30O', 'C8H8NO5P', 'CH3N2O', 'C5H4N5', 'C10H11N5O3', 'C10H13N5O9P2', 'C10H12N5O6P', 'C9H13N3O10P2', 'C9H12N3O7P', 'C4H4N3O', 'C10H13N5O10P2', 'C10H12N5O7P', 'C5H4N5O', 'C10H11N5O4', 'C10H14N2O10P2', 'C10H12N2O4', 'C5H5N2O2', 'C10H13N2O7P', 'C9H12N2O11P2', 'C9H11N2O8P', 'C4H3N2O2', 'C9H10N2O5', 'C2H3O2', 'C2H2O', 'C2H2', 'CO2', 'CHO2', 'H2O', 'H3O6P2', 'C2H4', 'CO', 'C2O2', 'H2', 'O', 'P', 'C2H2O', 'CH2', 'HPO3', 'NH2', 'PP', 'NH', 'SO3', 'N', 'C6H10O5', 'C6H10O6', 'C5H8O4', 'C12H20O11', 'C6H11O8P', 'C6H8O6', 'C6H10O5', 'C18H30O15'], ncores=1)
         Compute matrix of biochemical connections. Either based on a list of
         possible connections in the form of a list of formulas or based on the
         reactions present in the database.
@@ -2073,12 +2076,16 @@ help(ipa.Compute_Bio)
             - reactions: list of reactions ids involving this compound
                         (e.g., 'R00010 R00015 R00028')-optional, but necessary if 
                         mode='reactions'.
-        annotations: a dictonary containg all the possible annotations for the
+        annotations: If equal to None (default) all entries in the DB are conisdered 
+                    (used to pre-compute the Bio matrix), alternatively it should be
+                    a dictonary containg all the possible annotations for the
                     measured features. The keys of the dictionay are the unique ids
                     for the features present in df. For each feature, the
                     annotations are summarized in a pandas dataframe. Output of
                     functions MS1annotation(), MS1annotation_Parallel(),
-                    MSMSannotation() or MSMSannotation_Parallel
+                    MSMSannotation() or MSMSannotation_Parallel. In this case
+                    only the entries currently considered as possible annotations
+                    are used.
         mode: either 'reactions' (connections are computed based on the reactions
               present in the database) or 'connections' (connections are computed
               based on the list of connections provided). Default 'reactions'.
@@ -2123,43 +2130,43 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
+      <td>C00183</td>
+      <td>C00407</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>C21092</td>
+      <td>C00407</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>C02486</td>
+      <td>C00123</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>C00431</td>
+      <td>C00763</td>
+    </tr>
+    <tr>
+      <th>4</th>
       <td>C04368</td>
       <td>C00082</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>C02265</td>
-      <td>C00079</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>C00407</td>
-      <td>C21092</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>C00407</td>
-      <td>C00183</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>C00082</td>
-      <td>C00079</td>
-    </tr>
-    <tr>
       <th>5</th>
-      <td>C00763</td>
-      <td>C00431</td>
+      <td>C00079</td>
+      <td>C00082</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>C20807</td>
       <td>C00079</td>
+      <td>C20807</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>C02486</td>
-      <td>C00123</td>
+      <td>C00079</td>
+      <td>C02265</td>
     </tr>
   </tbody>
 </table>
@@ -2178,7 +2185,7 @@ Bio
 
     computing all possible biochemical connections
     considering the provided connections ...
-    3.8 seconds elapsed
+    3.9 seconds elapsed
 
 
 
@@ -2197,99 +2204,118 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
-      <td>C04281</td>
-      <td>C16744</td>
+      <td>C22140</td>
+      <td>C04282</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>C04281</td>
-      <td>C05131</td>
+      <td>C22140</td>
+      <td>C01877</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>C04281</td>
       <td>C22140</td>
+      <td>C01879</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>C22140</td>
       <td>C22141</td>
-      <td>C16744</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>C22141</td>
-      <td>C05131</td>
+      <td>C22140</td>
+      <td>C04281</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>C22141</td>
       <td>C22140</td>
+      <td>C02237</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>C16744</td>
-      <td>C01879</td>
+      <td>C04282</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>7</th>
+      <td>C04282</td>
       <td>C16744</td>
-      <td>C01877</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>C16744</td>
-      <td>C02237</td>
+      <td>C01877</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>9</th>
+      <td>C01877</td>
       <td>C16744</td>
-      <td>C04282</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>C01879</td>
       <td>C05131</td>
+      <td>C01879</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>C01879</td>
-      <td>C22140</td>
+      <td>C05131</td>
+      <td>C22141</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>C01877</td>
       <td>C05131</td>
+      <td>C04281</td>
     </tr>
     <tr>
       <th>13</th>
-      <td>C01877</td>
-      <td>C22140</td>
+      <td>C05131</td>
+      <td>C02237</td>
     </tr>
     <tr>
       <th>14</th>
-      <td>C05131</td>
-      <td>C02237</td>
+      <td>C01879</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>C05131</td>
-      <td>C04282</td>
+      <td>C22141</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>16</th>
-      <td>C02237</td>
-      <td>C22140</td>
+      <td>C04281</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>17</th>
-      <td>C22140</td>
-      <td>C04282</td>
+      <td>C02237</td>
+      <td>C16744</td>
     </tr>
   </tbody>
 </table>
 </div>
 
 
+
+Depending on the size of the database and the dataset, computing all possible biochemical connections can be extremely computational demanding and drastically increase the computation time needed for the annotation. For this reason, a precomputed list of biochemical connections based on the database provided (computed based on 'reaction' or 'connections' mode) is included in the library and can be used directly without the need of computing the biochemical connections.
+
+
+```python
+Bio = pd.read_csv('DB/allBIO_reactions.csv')
+```
+
+The list of connections computed with mode='connections' needs to be unzipped first.
+
+
+```python
+import zipfile
+with zipfile.ZipFile("DB/allBio_connections.csv.zip","r") as zip_ref:
+    zip_ref.extractall("DB/")
+
+Bio=pd.read_csv('DB/allBio_connections.csv')
+
+```
 
 Alternatively, the user can define his own biochemical connetions.
 For example:
@@ -2324,13 +2350,11 @@ ipa.Gibbs_sampler_bio(df,annotations,Bio,noits=5000,delta_bio=0.1)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 239.57it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:21<00:00, 232.20it/s]
+
 
     parsing results ...
-    Done -  20.9 seconds elapsed
-
-
-    
+    Done -  21.6 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 992 is shown below.
@@ -2380,7 +2404,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.532712</td>
-      <td>0.772222</td>
+      <td>0.773111</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2397,7 +2421,7 @@ annotations[992]
       <td>0.319427</td>
       <td>0.317559</td>
       <td>0.121545</td>
-      <td>0.178000</td>
+      <td>0.177333</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2414,7 +2438,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.266356</td>
-      <td>0.039111</td>
+      <td>0.036222</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2431,7 +2455,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.047324</td>
       <td>0.079388</td>
-      <td>0.010667</td>
+      <td>0.013333</td>
       <td>0.0</td>
     </tr>
   </tbody>
@@ -2512,11 +2536,11 @@ ipa.Gibbs_sampler_bio_add(df,annotations,Bio,noits=5000,delta_bio=0.1,delta_add=
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 260.48it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 251.08it/s]
 
 
     parsing results ...
-    Done -  19.2 seconds elapsed
+    Done -  20.0 seconds elapsed
 
 
 
@@ -2564,8 +2588,8 @@ annotations[1]
       <td>0.999759</td>
       <td>0.318084</td>
       <td>0.543121</td>
-      <td>0.611556</td>
-      <td>6.919276e-86</td>
+      <td>0.606444</td>
+      <td>1.978131e-72</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2581,8 +2605,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.304221</td>
-      <td>0.342222</td>
-      <td>6.919276e-86</td>
+      <td>0.339111</td>
+      <td>1.978131e-72</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2598,8 +2622,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.152110</td>
-      <td>0.046222</td>
-      <td>6.919276e-86</td>
+      <td>0.054222</td>
+      <td>1.978131e-72</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2615,8 +2639,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.045748</td>
       <td>0.000548</td>
-      <td>0.000000</td>
-      <td>6.919276e-86</td>
+      <td>0.000222</td>
+      <td>1.978131e-72</td>
     </tr>
   </tbody>
 </table>
@@ -2756,11 +2780,13 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 276.30it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 263.04it/s]
 
     parsing results ...
-    Done -  18.2 seconds elapsed
+    Done -  19.1 seconds elapsed
+
+
+    
 
 
 If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler should use the following:
@@ -2775,16 +2801,18 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 information....
-    0.6 seconds elapsed
+    0.5 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:17<00:00, 280.38it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 270.22it/s]
 
     parsing results ...
-    Done -  17.9 seconds elapsed
+    Done -  18.6 seconds elapsed
+
+
+    
 
 
 Or if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
@@ -2807,9 +2835,9 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 258.71it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 245.75it/s]
 
 
     parsing results ...
-    Done -  19.4 seconds elapsed
+    Done -  20.4 seconds elapsed
 

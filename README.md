@@ -453,7 +453,7 @@ The MS2 database must be provided as a pandas dataframe including the following 
 - **spectrum**: The actual spectrum in the form of a string in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
 
 It is necessary that the user uses a MS2 database specific to the instrument used to acquire the data.
-The MS2 database found [here](https://drive.google.com/file/d/15qduvtE8aSAAUCf1FE4ojcVLaTw-B2W6/view?usp=sharing), contains all the MS2 spectra found in the [MoNa](https://mona.fiehnlab.ucdavis.edu) database acquired with a Qexactive. This is a relatively big file, and for the sake of this tutorial a drastically reduced version of it has been included within this repository, and can be foudn [here](DB/DBMS2_test_pos.csv).
+The MS2 database found [here](https://drive.google.com/file/d/15qduvtE8aSAAUCf1FE4ojcVLaTw-B2W6/view?usp=sharing), contains all the MS2 spectra found in the [MoNa](https://mona.fiehnlab.ucdavis.edu) database acquired with a Qexactive. This is a relatively big file, and for the sake of this tutorial a drastically reduced version of it has been included within this repository, and can be found [here](DB/DBMS2_test_pos.csv).
 
 
 

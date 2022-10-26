@@ -2,6 +2,7 @@
 import pandas
 import numpy
 import math
+import statistics
 
 class SampleFragmentsItem():
 

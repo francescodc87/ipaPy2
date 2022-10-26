@@ -1209,7 +1209,7 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
     # mapping isotopes
     if len(df.columns)==5 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints']):
         map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)
-    elif len(df.columns)==8 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints','relationship','isotope pattern','charge']):
+    elif len(df.columns)==8 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints','relationship','isotope.pattern','charge']):
         print("isotopes already mapped")
     else:
         raise ValueError("df not in the correct format")

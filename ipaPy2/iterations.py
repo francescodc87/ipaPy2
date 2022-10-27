@@ -146,7 +146,7 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
     return(tmp)
 
 
-def MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
+def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
     mm= df.iloc[k,2]
     rtm=df.iloc[k,3]
     ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
@@ -244,6 +244,142 @@ def MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,p
                 for s in range(0,len(Msps.index)):
                     Msp = Msps.iloc[s,1]
                     ev = Msps.iloc[s,2]
+                    precType = allAdds['adduct'][hits[h]]
+                    DBsp = DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType) & (DBMS2['collision.energy']==ev)]['spectrum']
+                    #DBsp = list(DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType)]['spectrum'])
+                    if len(DBsp)>0:
+                        CStmp =[]
+                        for spDB in DBsp:
+                            CStmp.append(MS2compare.cosine_similarity(spDB,Msp,mzdCS,ppmCS))
+                        
+                        CS.append(max(CStmp))
+                    else:
+                        CS.append(0.0)
+                CS = max(CS)
+                if CS==0:
+                    CS=CSunk
+                tmp.iloc[h,9]=CS
+            
+
+        ### computing posteriors integrating iso score and pk and RTscore and MS2 score
+        p1 = tmp.iloc[:,8]
+        pMS2 = tmp.iloc[:,9]
+        pMS2 = [CSunk if v is None else v for v in pMS2]# fragmentation score remove none
+        pMS2 = [x / sum(pMS2) for x in pMS2] # normalize fragmentation scores
+        p1 = [1 if v is None else v for v in p1]# isopattern score
+        pks = [1 if v is None else v for v in pks]# previous knowledge score
+        post = [a*b*c*d*e for a,b,c,d,e in zip(priors,p1,pks,pRT,pMS2)]
+        post = [x / sum(post) for x in post]
+        tmp.iloc[:,11] = post
+        tmp = tmp.sort_values(by=['post'], ascending=False)
+            
+    else:
+        tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
+                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
+                       'fragmentation pattern score':[None],'prior':[1],'post':[1]})
+    tmp.index=range(0,len(tmp.index)) 
+    return(tmp)
+
+
+
+def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
+    mm= df.iloc[k,2]
+    rtm=df.iloc[k,3]
+    ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
+    hits = util.which(abs(ppms)<=ppmthr)
+    priors = list(ppms[hits].copy())
+    priors.append(ppmunk)
+    priors = stats.norm(0, ppm/2).pdf(priors)
+    pks = list(allAdds.pk[hits].copy())
+    pks.append(1)
+    priors=priors/sum(priors)
+    if len(hits)>0: #have to add the unknowm
+        tmp = allAdds.iloc[hits,[0,1,3,2,5,4,6]].copy()
+        tmp = tmp.rename(columns={'RT':'RT range'})
+        tmp['ppm'] = ppms[hits]
+        tmp['isotope pattern score'] = [None]*len(hits)
+        tmp['fragmentation pattern score'] = [None]*len(hits)
+        tmp['prior'] = [None]*len(hits)
+        tmp['post'] = [None]*len(hits)
+        uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
+                       'charge':[None],'RT range':[None],'ppm':[ppm],
+                       'isotope pattern score':[None],
+                       'fragmentation pattern score':[None],'prior':[None],'post':[None]})
+        tmp=pandas.concat([tmp,uk])
+        ### compute isotope pattern scores
+        relid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),1])[0]
+        isoid = list(df.iloc[util.which(df.iloc[:,0]==df.iloc[k,0]),6])[0]
+        tmp.iloc[:,10] = priors
+        if isoid is not None:
+            indiso = list(set(util.which(df.iloc[:,1]==relid)) & set(util.which(df.iloc[:,6]==isoid)))
+            ISm = df.iloc[indiso,[2,4]]
+            ### computing isotope patterns scores
+            pisoM=[]
+            pisoI=[]
+            for isp in range(0,len(hits)):
+                mtmp = molmass.Formula(tmp.iloc[isp,2])
+                ch = tmp.iloc[isp,5]
+                ISt = mtmp.spectrum()
+                ISt = pandas.DataFrame(ISt).transpose()
+                if(len(ISt.index)<len(ISm.index)):
+                    pisoM.append(0)
+                    pisoI.append(0)
+                else:
+                    if ch>0:
+                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) - me
+                    else:
+                        ISt.iloc[:,0] = (ISt.iloc[:,0]/abs(ch)) + me
+
+                    ISt=ISt.sort_values(by=[0])
+                    ISm=ISm.sort_values(by=['mzs'])
+                    ISm.iloc[:,1] = ISm.iloc[:,1]/max(ISm.iloc[:,1])
+                    ISt = ISt.iloc[range(0,len(ISm.index)),:]
+                    ISt.iloc[:,1] = ISt.iloc[:,1]/max(ISt.iloc[:,1])
+                    pMs = []
+                    pIs = []
+                    for ps in range(1,len(ISm.index)):
+                        ppmk =((ISt.iloc[ps,0]-ISm.iloc[ps,0])/ISt.iloc[ps,0])*(10**6)
+                        pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
+                        pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
+
+                    pisoM.append(sum(pMs))
+                    pisoI.append(sum(pIs))
+            ###adding scores for unknown
+            pisoM.append(sum([stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0)]*len(ISm.index)))
+            pisoI.append(sum([stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2))]*len(ISm.index)))    
+            pisoM = pisoM/sum(pisoM)
+            pisoI = pisoI/sum(pisoI)
+            piso = pisoM*pisoI
+            tmp.iloc[:,8] = piso/sum(piso)
+            
+        ### computing RT score
+        pRT = [pRTNone]*len(tmp.index)
+        RTranges = list(tmp['RT range'])
+
+        for r in range(0,len(RTranges)):
+            if RTranges[r]!=None:
+                rtrange = RTranges[r].split(';')
+                rtrange = [float(i) for i in rtrange]
+                if rtm >= rtrange[0] and rtm <= rtrange[1]:
+                    pRT[r]=1
+                else:
+                    pRT[r]=pRTout
+
+        ### if for this id I have measured fragmentation spectrum (or spectra) and I have info in the DBMS2 for the possible hits I compute the fragementation score!
+        ### add code here!
+        mzid = df['ids'][k] ## getting the mzid from the dataset
+        ms2inds = list(allAdds['MS2'][hits]) ## getting the MS2 DB ids 
+        ### I need to do anything only if the mzid is present in the dfMS2 AND if I have and ms2inds different than None
+        if mzid in list(dfMS2['id']) and (len(ms2inds)-ms2inds.count(None))>0:
+            Msps = dfMS2[dfMS2['id']==mzid] ### getting the measured spectra for this id
+            tmp.iloc[len(hits),9]=CSunk
+            for h in range(0,len(hits)):
+                #### look for the spectra in the database
+                MS2id=ms2inds[h]
+                CS=[]
+                for s in range(0,len(Msps.index)):
+                    Msp = Msps.iloc[s,1]
+                    #ev = Msps.iloc[s,2]
                     precType = allAdds['adduct'][hits[h]]
                     #DBsp = DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType) & (DBMS2['collision.energy']==ev)]['spectrum']
                     DBsp = list(DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType)]['spectrum'])

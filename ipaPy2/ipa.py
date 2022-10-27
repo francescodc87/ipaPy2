@@ -411,7 +411,7 @@ def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,
 def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
                    ratiosd=0.9,ppmunk=None, ratiounk=None,ppmthr=None,
                    pRTNone=None, pRTout=None,mzdCS=0, ppmCS=10, CSunk=0.7,
-                   ncores=1):
+                   evfilt=False,ncores=1):
     """
     Annotation of the dataset base on the MS1 and MS2 information. Prior
     probabilities are based on mass only, while post probabilities are based
@@ -456,6 +456,8 @@ def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
            set to 0. Default 10.
     CSunk: cosine similarity score associated with the 'unknown' annotation.
             Default 0.7
+    evfilt: Default value False. If true, only spectrum acquired with the same
+            collision energy are considered.
     ncores: default value 1. Number of cores used
     
     Returns
@@ -507,7 +509,10 @@ def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
         ind.sort()
         sigmaln = math.sqrt(1/ratiosd)
         pool_obj = multiprocessing.Pool(ncores)
-        data = pool_obj.map(partial(iterations.MSMS_ann_iter,df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln),ind)
+        if evfilt:
+            data = pool_obj.map(partial(iterations.MSMS_ann_iter1,df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln),ind)
+        else:
+            data = pool_obj.map(partial(iterations.MSMS_ann_iter2,df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln),ind)
         pool_obj.terminate()
         keys = list(df.iloc[ind,0])
         annotations = dict(zip(keys, data))
@@ -1089,6 +1094,7 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
               mode='reactions',CSunk=0.5,isodiff=1,ppmiso=100,ncores=1,
               me=5.48579909065e-04,ratiosd=0.9,ppmunk=None,ratiounk=None,
               ppmthr=None,pRTNone=None,pRTout=None,mzdCS=0, ppmCS=10,
+              evfilt=False,
               connections = ["C3H5NO", "C6H12N4O", "C4H6N2O2", "C4H5NO3",
                              "C3H5NOS", "C6H10N2O3S2","C5H7NO3","C5H8N2O2",
                              "C2H3NO","C6H7N3O","C6H11NO","C6H11NO","C6H12N2O",
@@ -1152,6 +1158,8 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
                        spectrum
     DBMS2: pandas dataframe containing the database containing the MS2
            information (optional)
+    evfilt: Default value False. If true, only spectra acquired with the same
+            collision energy are considered.
     noits: number of iterations if the Gibbs sampler to be run
     burn: number of iterations to be ignored when computing posterior
           probabilities. If None, is set to 10% of total iterations
@@ -1228,7 +1236,7 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
     
         annotations = MSMSannotation(df=df,dfMS2=dfMS2,allAdds=allAdds,DBMS2=DBMS2,ppm=ppm,me=me,ratiosd=ratiosd,
         ppmunk=ppmunk,ratiounk=ratiounk,ppmthr=ppmthr,pRTNone=pRTNone,pRTout=pRTout,mzdCS=mzdCS,ppmCS=ppmCS,
-        CSunk=CSunk,ncores=ncores)
+        CSunk=CSunk,evfilt=evfilt,ncores=ncores)
 
     # computing Bio matrix (if necessary)
     if (Bio is None) and (delta_bio is not None):

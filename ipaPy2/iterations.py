@@ -245,10 +245,14 @@ def MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,p
                     Msp = Msps.iloc[s,1]
                     ev = Msps.iloc[s,2]
                     precType = allAdds['adduct'][hits[h]]
-                    DBsp = DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType) & (DBMS2['collision.energy']==ev)]['spectrum']
+                    #DBsp = DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType) & (DBMS2['collision.energy']==ev)]['spectrum']
+                    DBsp = list(DBMS2[(DBMS2['compound_id']==MS2id) & (DBMS2['precursorType']==precType)]['spectrum'])
                     if len(DBsp)>0:
-                        DBsp = DBsp.item()
-                        CS.append(MS2compare.cosine_similarity(DBsp,Msp,mzdCS,ppmCS))
+                        CStmp =[]
+                        for spDB in DBsp:
+                            CStmp.append(MS2compare.cosine_similarity(spDB,Msp,mzdCS,ppmCS))
+                        
+                        CS.append(max(CStmp))
                     else:
                         CS.append(0.0)
                 CS = max(CS)

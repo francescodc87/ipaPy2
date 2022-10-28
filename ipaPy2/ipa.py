@@ -486,7 +486,10 @@ def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
         sigmaln = math.sqrt(1/ratiosd)
         data=[]
         for k in ind:
-            data.append(iterations.MSMS_ann_iter(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k))
+            if evfilt:
+                data.append(iterations.MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k))
+            else:
+                data.append(iterations.MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k))
         keys = list(df.iloc[ind,0])
         annotations = dict(zip(keys, data))
         end = time.time()

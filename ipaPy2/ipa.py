@@ -42,6 +42,7 @@ def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
     """
     print("Clustering features ....")
     start = time.time()
+    df=df.replace('None',None)
     ids = list(df.iloc[:,0])
     mzs=list(df.iloc[:,1])
     RTs=list(df.iloc[:,2])
@@ -133,6 +134,7 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
     """
     print("mapping isotope patterns ....")
     start = time.time()
+    df=df.replace('None',None)
     if isinstance(df, pandas.DataFrame):
         relIds = df.iloc[:,1]
         relIds = list(set(relIds))
@@ -352,6 +354,7 @@ def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,
                 ids for the features present in df. For each feature, the
                 annotations are summarized in a pandas dataframe.
     """
+    df=df.replace('None',None)
     if ncores==1:
         print("annotating based on MS1 information....")
         start = time.time()
@@ -467,6 +470,8 @@ def MSMSannotation(df,dfMS2,allAdds,DBMS2,ppm,me = 5.48579909065e-04,
                  ids for the features present in df. For each feature, the
                  annotations are summarized in a pandas dataframe.
     """
+    df=df.replace('None',None)
+    dfMS2=dfMS2.replace('None',None)
     if ncores==1:
         print("annotating based on MS1 and MS2 information....")
         start = time.time()
@@ -863,6 +868,7 @@ def Gibbs_sampler_bio(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
                  annotations are summarized in a pandas dataframe.
 
     """
+    df=df.replace('None',None)
     start = time.time()
     print("computing posterior probabilities including biochemical connections")
     print("initialising sampler ...")
@@ -1007,6 +1013,7 @@ def Gibbs_sampler_bio_add(df,annotations,Bio,noits=100,burn=None,delta_bio=1,
     start = time.time()
     print("computing posterior probabilities including biochemical and adducts connections")
     print("initialising sampler ...")
+    df=df.replace('None',None)
     all_ids = []
     for k in annotations.keys():
         tmp = annotations[k]
@@ -1217,6 +1224,8 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
         annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
     """
+    df=df.replace('None',None)
+    dfMS2=dfMS2.replace('None',None)
     # mapping isotopes
     if len(df.columns)==5 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints']):
         map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)

@@ -1224,7 +1224,6 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
                      unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
     """
     df=df.replace('None',None)
-    dfMS2=dfMS2.replace('None',None)
     # mapping isotopes
     if len(df.columns)==5:
         map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)

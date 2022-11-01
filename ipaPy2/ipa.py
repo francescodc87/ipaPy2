@@ -134,7 +134,6 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
     """
     print("mapping isotope patterns ....")
     start = time.time()
-    df=df.replace('None',None)
     if isinstance(df, pandas.DataFrame):
         relIds = df.iloc[:,1]
         relIds = list(set(relIds))
@@ -1227,9 +1226,9 @@ def simpleIPA(df,ionisation,DB,adductsAll,ppm,dfMS2=None,DBMS2=None,noits=100,
     df=df.replace('None',None)
     dfMS2=dfMS2.replace('None',None)
     # mapping isotopes
-    if len(df.columns)==5 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints']):
+    if len(df.columns)==5:
         map_isotope_patterns(df,isoDiff=isodiff, ppm=ppmiso,ionisation=ionisation)
-    elif len(df.columns)==8 and all(df.columns==['ids','rel.ids','mzs','RTs','Ints','relationship','isotope.pattern','charge']):
+    elif len(df.columns)==8:
         print("isotopes already mapped")
     else:
         raise ValueError("df not in the correct format")

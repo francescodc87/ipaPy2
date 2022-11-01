@@ -88,7 +88,7 @@ pip install /path/to/wheelfile.whl
 to be added
 
 ## Databases
-One of the most powerful fetures of the IPA method is that it is able to integrate the knowledge gained from previous experiments in the anntoation process. There are three files that are used as database:
+One of the most powerful features of the IPA method is that it is able to integrate the knowledge gained from previous experiments in the annotation process. There are three files that are used as database:
 
 **1. adducts file (required)**
 <br />
@@ -107,7 +107,19 @@ adducts.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -193,9 +205,9 @@ adducts.head()
 **2. MS1 database file (required)**
 <br />
 The IPA method requires a pandas dataframe containing the database against which the annotation is performed.
-Such dataframe must contain the following columns in this exact order (optional colums can have empty fields):
+Such dataframe must contain the following columns in this exact order (optional columns can have empty fields):
 - **id**: unique id of the database entry (e.g., 'C00031') - *necessary*
-- **name**: compund name (e.g., 'D-Glucose') - *necessary*
+- **name**: compound name (e.g., 'D-Glucose') - *necessary*
 - **formula**: chemical formula (e.g., 'C6H12O6') - *necessary*
 - **inchi**: inchi string - *optional*
 - **smiles**: smiles string - *optional*
@@ -203,7 +215,7 @@ Such dataframe must contain the following columns in this exact order (optional 
 - **adductsPos**: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+') - *necessary*
 - **adductsNeg**: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H') - *necessary*
 - **description**: comments on the entry - *optional*
-- **pk**: previous knowledge on the likelihood of this compoud to be present in the sample analyse. The value has to be between 1 (compound likely to be present in the sample) and 0 (compound cannot be present in the sample).
+- **pk**: previous knowledge on the likelihood of this compound to be present in the sample analyse. The value has to be between 1 (compound likely to be present in the sample) and 0 (compound cannot be present in the sample).
 - **MS2**: id for the MS2 database entries related to this compound - *optional*
 - **reactions**: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028'). If required, these can be used to find possible biochemical connections - *optional* 
 
@@ -220,7 +232,19 @@ DB.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -321,7 +345,7 @@ DB.head()
 
 
 
-This example databases was obtained considering the [KEGG database](https://www.genome.jp/kegg/compound/), the [Natural Products Atlas database](https://www.npatlas.org) and the [MoNa database](https://mona.fiehnlab.ucdavis.edu) (only compounds having at least one fragmentation spectra obtained with a Qexactive).
+This example databases was obtained considering the [KEGG database](https://www.genome.jp/kegg/compound/), the [Natural Products Atlas database](https://www.npatlas.org) and the [MoNa database](https://mona.fiehnlab.ucdavis.edu) (only compounds having at least one fragmentation spectra obtained with a QExactive).
 For each entry, only a handful of the most common adducts is considered.
 To fully exploit the IPA method, it is strongly recommended to constantly update the database when new knowledge is gained from previous experience. Providing a retention time window for compounds previously detected with the analytical system at hand it is particularly useful.
 For the sake of the example in this tutorial, a reduced example database is also provided.
@@ -336,7 +360,19 @@ DB.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -443,8 +479,8 @@ This new implementation of the IPA method also allows the user to include MS2 da
 In order to exploit this functionality a MS2 spectra database must be provided.
 The MS2 database must be provided as a pandas dataframe including the following columns in this exact order:
 - **compound_id**: unique id for each compound, it must match with the ids used in the MS1 database - *necessary*
-- **id**: Unique id for the single entry (i.e., spectra) of the databse *necessary*
-- **name**: compund name (e.g., 'D-Glucose') - *necessary*
+- **id**: Unique id for the single entry (i.e., spectra) of the database *necessary*
+- **name**: compound name (e.g., 'D-Glucose') - *necessary*
 - **formula**: chemical formula (e.g., 'C6H12O6') - *necessary*
 - **inchi**: inchi string - *optional*
 - **precursorType**: the adduct form of the precursor ion (e.g., 'M+H') - *necessary*
@@ -453,7 +489,7 @@ The MS2 database must be provided as a pandas dataframe including the following 
 - **spectrum**: The actual spectrum in the form of a string in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
 
 It is necessary that the user uses a MS2 database specific to the instrument used to acquire the data.
-The MS2 database found [here](https://drive.google.com/file/d/15qduvtE8aSAAUCf1FE4ojcVLaTw-B2W6/view?usp=sharing), contains all the MS2 spectra found in the [MoNa](https://mona.fiehnlab.ucdavis.edu) database acquired with a Qexactive. This is a relatively big file, and for the sake of this tutorial a drastically reduced version of it has been included within this repository, and can be found [here](DB/DBMS2_test_pos.csv).
+The MS2 database found [here](https://drive.google.com/file/d/15qduvtE8aSAAUCf1FE4ojcVLaTw-B2W6/view?usp=sharing), contains all the MS2 spectra found in the [MoNa](https://mona.fiehnlab.ucdavis.edu) database acquired with a QExactive. This is a relatively big file, and for the sake of this tutorial a drastically reduced version of it has been included within this repository, and can be found [here](DB/DBMS2_test_pos.csv).
 
 
 
@@ -466,7 +502,19 @@ DBMS2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -559,7 +607,7 @@ The data must be organized in a pandas dataframe containing the following column
 - **rel.ids**: relation ids. Features must be clustered based on correlation/peak shape/retention time. Features in the same cluster are likely to come from the same metabolite.
 - **mzs**: mass-to-charge ratios, usually the average across different samples.
 - **RTs**: retention times in seconds, usually the average across different samples.
-- **Int**: epresentative (e.g., maximum or average) intensity detected for each feature across samples (either peak area or peak intensity)
+- **Int**: representative (e.g., maximum or average) intensity detected for each feature across samples (either peak area or peak intensity)
 
 
 Below is reported an example:
@@ -574,7 +622,19 @@ df1.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -647,7 +707,19 @@ df2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -764,7 +836,7 @@ df=ipa.clusterFeatures(df2)
     0.0 seconds elapsed
 
 
-All inforamtion about the function can be found in the help of the function
+All information about the function can be found in the help of the function
 
 
 ```python
@@ -779,15 +851,15 @@ help(ipa.clusterFeatures)
         Parameters
         ----------
         df: pandas dataframe with the following columns:
-            -ids: an unique id for each feature
+            -ids: a unique id for each feature
             -mzs: mass-to-charge ratios, usually the average across different
                   samples.
             -RTs: retention times in seconds, usually the average across different
                   samples.
             -Intensities: for each sample, a column reporting the detected
                           intensities in each sample. 
-        Cthr: Default value 0.8. Minimun correlation allowed in each cluster
-        RTwin: Default value 1. Maximum differece in RT time between features in
+        Cthr: Default value 0.8. Minimum correlation allowed in each cluster
+        RTwin: Default value 1. Maximum difference in RT time between features in
                the same cluster
         Intmode: Defines how the representative intensity of each feature is
                  computed. If 'max' (default) the maximum across samples is used.
@@ -810,7 +882,19 @@ df.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -889,7 +973,19 @@ dfMS2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -959,9 +1055,9 @@ help(ipa.map_isotope_patterns)
         ----------
         df : pandas dataframe (necessary)
              A dataframe containing the MS1 data including the following columns:
-                -ids : an unique id for each feature
+                -ids: an unique id for each feature
                 -rel.ids:   relation ids. In a previous step of the data processing
-                            pipeline,features are clustered based on peak shape
+                            pipeline, features are clustered based on peak shape
                             similarity/retention time. Features in the same
                             cluster are likely to come from the same metabolite.
                             All isotope patterns must be in the same rel.id
@@ -975,14 +1071,14 @@ help(ipa.map_isotope_patterns)
                        intensity)
         isoDiff : Default value 1. Difference between isotopes of charge 1, does
                   not need to be exact
-        ppm :  Default value 100. Maximum ppm value allowed between 2 isotopes.
+        ppm:   Default value 100. Maximum ppm value allowed between 2 isotopes.
                 It is very high on purpose
         ionisation: Default value 1. positive = 1, negative = -1
         
         Returns
         -------
         df: the main input is modified by adding and populating the following
-            colums
+            columns
             - relationship: the possible values are:
                             * bp: basepeak, most intense peak within each rel id
                             * bp|isotope: isotope of the basepeak
@@ -1018,7 +1114,19 @@ df.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1099,7 +1207,7 @@ Some data processing pipelines already have a isotope mapping function and the u
 
 **2. Compute all adducts**
 
-The second step of the pipeline consits in the calculation of all possible adducts that could be generated by the compounds included in the database.
+The second step of the pipeline consists in the calculation of all possible adducts that could be generated by the compounds included in the database.
 This is done by the function compute_all_adducts(). This function comes with a very detailed help.
 
 
@@ -1115,15 +1223,15 @@ help(ipa.compute_all_adducts)
         Parameters
         ----------
         adductsAll : pandas dataframe (necessary)
-                     Dataframen containing information on all possible
+                     Dataframe containing information on all possible
                      adducts. The file must be in the same format as the example
                      provided in the DB/adducts.csv
         DB : pandas dataframe (necessary)
-             Datafrane containing the database against which the annotation is
+             Dataframe containing the database against which the annotation is
              performed. The DB must contain the following columns in this exact
              order (optional fields can contain None):
                  - id: unique id of the database entry (e.g., 'C00031') - necessary
-                 - name: compund name (e.g., 'D-Glucose') - necessary
+                 - name: compound name (e.g., 'D-Glucose') - necessary
                  - formula: chemical formula (e.g., 'C6H12O6') - necessary
                  - inchi: inchi string - optional
                  - smiles: smiles string - optional
@@ -1134,7 +1242,7 @@ help(ipa.compute_all_adducts)
                  - adductsNeg: list of adducts that should be considered in
                                negative mode for this entry (e.g.,'M-H;M-2H')
                  - description: comments on the entry - optional
-                 - pk: previous knowledge on the likelihood of this compoud to be
+                 - pk: previous knowledge on the likelihood of this compound to be
                        present in the sample analysed. The value has to be between
                        1 (compound likely to be present in the sample) and 0
                        (compound cannot be present in the sample).
@@ -1173,7 +1281,19 @@ allAddsPos.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1256,11 +1376,11 @@ allAddsPos.head()
 
 
 
-If the same database is used for subsequent experiments without introducting new information, it is recommened to save the results of this function into a .csv file. Therefore, the user would need to repeat this step in the future only if the DB changed.
+If the same database is used for subsequent experiments without introducing new information, it is recommended to save the results of this function into a .csv file. Therefore, the user would need to repeat this step in the future only if the DB changed.
 
 **3. Annotation based on MS1 information**
 
-At this point, the actual annotation process can start. If no fragmentation data is available, tha MS1annotation() function should be used. This function annotates the dataset using the MS1 data and the information stored in the dataset. A detailed description of the function can be accessed through the help:
+At this point, the actual annotation process can start. If no fragmentation data is available, the MS1annotation() function should be used. This function annotates the dataset using the MS1 data and the information stored in the dataset. A detailed description of the function can be accessed through the help:
 
 
 ```python
@@ -1276,7 +1396,7 @@ help(ipa.MS1annotation)
         
         Parameters
         ----------
-        df: pandas dataframe containg the MS1 data. It should be the output of the
+        df: pandas dataframe containing the MS1 data. It should be the output of the
             function ipa.map_isotope_patterns()
         allAdds: pandas dataframe containing the information on all the possible
                 adducts given the database. It should be the output of either
@@ -1284,7 +1404,7 @@ help(ipa.MS1annotation)
         ppm: accuracy of the MS instrument used
         me: accurate mass of the electron. Default 5.48579909065e-04
         ratiosd: default 0.9. It represents the acceptable ratio between predicted
-                 intensity and observed intesity of isotopes. It is used to compute
+                 intensity and observed intensity of isotopes. It is used to compute
                  the shape parameters of the lognormal distribution used to
                  calculate the isotope pattern scores as sqrt(1/ratiosd)
         ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
@@ -1301,8 +1421,8 @@ help(ipa.MS1annotation)
         
         Returns
         -------
-        annotations: a dictonary containg all the possible annotations for the
-                    measured features. The keys of the dictionay are the unique
+        annotations: a dictionary containing all the possible annotations for the
+                    measured features. The keys of the dictionary are the unique
                     ids for the features present in df. For each feature, the
                     annotations are summarized in a pandas dataframe.
     
@@ -1320,7 +1440,7 @@ annotations=ipa.MS1annotation(df,allAddsPos,ppm=3,ncores=1)
 This function returns all the possible annotations for all the mass spectrometry features (excluding the ones previously identified as isotopes). The annotations are provided in the form of a dictionary.  The keys of the dictionary are the unique ids for the features present in df.
 For each feature, all possible annotations are summarised in a dataframe including the following information:
 
-- **id:** Unique id assocated with the compound as reported in the database
+- **id:** Unique id associated with the compound as reported in the database
 - **name:** Name of the compound
 - **formula:** Chemical formula of the putative annotation
 - **adduct:** Adduct type
@@ -1345,7 +1465,19 @@ annotations[1]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1445,7 +1577,19 @@ annotations[999]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1547,7 +1691,7 @@ annotations[999]
 
 
 Also in this case, all the prior probabilities associated with the four ions are exactly the same since all the ions have the same theoretical mass-to-charge ratios. However, the post probabilities are significantly different.
-Two of these ions (Coproporphyrinogen III M+2H and Coproporphyrinogen I M+2H) have charge +2, while the other two possible annotations have charge 1. The observed isotope pattern is coherent with an ion with charge +1 (i.e., difference between isotopes = 1), and this is reflected on the isotope score pattern and consequentely on the post probabilities. Moreover, the retention time associated with this feature is withing the range reported for L-Phenylalanine in the database. Therefore, the post probability associated with the L-Phenylalanine 2M+H is the most likely.
+Two of these ions (Coproporphyrinogen III M+2H and Coproporphyrinogen I M+2H) have charge +2, while the other two possible annotations have charge 1. The observed isotope pattern is coherent with an ion with charge +1 (i.e., difference between isotopes = 1), and this is reflected on the isotope score pattern and consequently on the post probabilities. Moreover, the retention time associated with this feature is withing the range reported for L-Phenylalanine in the database. Therefore, the post probability associated with the L-Phenylalanine 2M+H is the most likely.
 
 **4. Annotation based on MS1 and MS2 information**
 
@@ -1560,21 +1704,21 @@ help(ipa.MSMSannotation)
 
     Help on function MSMSannotation in module ipaPy2.ipa:
     
-    MSMSannotation(df, dfMS2, allAdds, DBMS2, ppm, me=0.000548579909065, ratiosd=0.9, ppmunk=None, ratiounk=None, ppmthr=None, pRTNone=None, pRTout=None, mzdCS=0, ppmCS=10, CSunk=0.7, ncores=1)
+    MSMSannotation(df, dfMS2, allAdds, DBMS2, ppm, me=0.000548579909065, ratiosd=0.9, ppmunk=None, ratiounk=None, ppmthr=None, pRTNone=None, pRTout=None, mzdCS=0, ppmCS=10, CSunk=0.7, evfilt=False, ncores=1)
         Annotation of the dataset base on the MS1 and MS2 information. Prior
         probabilities are based on mass only, while post probabilities are based
         on mass, RT, previous knowledge and isotope patterns.
         
         Parameters
         ----------
-        df: pandas dataframe containg the MS1 data. It should be the output of the
+        df: pandas dataframe containing the MS1 data. It should be the output of the
             function ipa.map_isotope_patterns()
         dfMS2: pandas dataframe containing the MS2 data. It must contain 3 columns
             -id: an unique id for each feature for which the MS2 spectrum was
                  acquired (same as in df)
-            -spectrum: string containing the spectrum inforamtion in the following
+            -spectrum: string containing the spectrum information in the following
                        format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
-            -ev: collision energy used to aquire the fragmentation spectrum
+            -ev: collision energy used to acquire the fragmentation spectrum
         allAdds: pandas dataframe containing the information on all the possible
                 adducts given the database. It should be the output of either
                 ipa.compute_all_adducts() or ipa.compute_all_adducts_Parallel()
@@ -1583,7 +1727,7 @@ help(ipa.MSMSannotation)
         ppm: accuracy of the MS instrument used
         me: accurate mass of the electron. Default 5.48579909065e-04
         ratiosd: default 0.9. It represents the acceptable ratio between predicted
-                intensity and observed intesity of isotopes. it is used to compute
+                intensity and observed intensity of isotopes. it is used to compute
                 the shape parameters of the lognormal distribution used to
                 calculate the isotope pattern scores as sqrt(1/ratiosd)
         ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
@@ -1604,12 +1748,14 @@ help(ipa.MSMSannotation)
                set to 0. Default 10.
         CSunk: cosine similarity score associated with the 'unknown' annotation.
                 Default 0.7
+        evfilt: Default value False. If true, only spectrum acquired with the same
+                collision energy are considered.
         ncores: default value 1. Number of cores used
         
         Returns
         -------
-        annotations: a dictonary containg all the possible annotations for the
-                     measured features. The keys of the dictionay are the unique
+        annotations: a dictionary containing all the possible annotations for the
+                     measured features. The keys of the dictionary are the unique
                      ids for the features present in df. For each feature, the
                      annotations are summarized in a pandas dataframe.
     
@@ -1623,7 +1769,7 @@ The line below integrates the fragmentation data and the fragmentation database 
 ```
 
     annotating based on MS1 and MS2 information....
-    0.7 seconds elapsed
+    1.0 seconds elapsed
 
 
 The output of this function has the same structure of the one from the MSannotation() function, but it also includes the fragmentation pattern scores when the fragmentation data is available.
@@ -1638,7 +1784,19 @@ annotations[1]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1737,7 +1895,19 @@ annotations[90]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1770,7 +1940,7 @@ annotations[90]
       <td>None</td>
       <td>0.7</td>
       <td>0.317329</td>
-      <td>0.483401</td>
+      <td>0.480821</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1785,7 +1955,7 @@ annotations[90]
       <td>None</td>
       <td>0.7</td>
       <td>0.317329</td>
-      <td>0.241701</td>
+      <td>0.240410</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1798,9 +1968,9 @@ annotations[90]
       <td>35;55</td>
       <td>-0.708479</td>
       <td>None</td>
-      <td>0.584318</td>
+      <td>0.59986</td>
       <td>0.317329</td>
-      <td>0.201757</td>
+      <td>0.206018</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1815,7 +1985,7 @@ annotations[90]
       <td>None</td>
       <td>0.7</td>
       <td>0.048013</td>
-      <td>0.073141</td>
+      <td>0.072751</td>
     </tr>
   </tbody>
 </table>
@@ -1846,10 +2016,10 @@ help(ipa.Gibbs_sampler_add)
         
         Parameters
         ----------
-        df: pandas dataframe containg the MS1 data. It should be the output of the
+        df: pandas dataframe containing the MS1 data. It should be the output of the
             function ipa.map_isotope_patterns()
-        annotations: a dictonary containg all the possible annotations for the
-                    measured features. The keys of the dictionay are the unique
+        annotations: a dictionary containing all the possible annotations for the
+                    measured features. The keys of the dictionary are the unique
                     ids for the features present in df. For each feature, the
                     annotations are summarized in a pandas dataframe. Output of
                     functions MS1annotation(), MS1annotation_Parallel(),
@@ -1857,13 +2027,13 @@ help(ipa.Gibbs_sampler_add)
         noits: number of iterations if the Gibbs sampler to be run
         burn: number of iterations to be ignored when computing posterior
               probabilities. If None, is set to 10% of total iterations
-        delta_add: parameter used when computiong the conditional priors. The
+        delta_add: parameter used when computing the conditional priors. The
                    parameter must be positive. The smaller the parameter the more
                    weight the adducts connections have on the posterior
                    probabilities. Default 1.
-        all_out: logical value. If true the list of assigments found in each
+        all_out: logical value. If true the list of assignments found in each
                  iteration is returned by the function. Default False.
-        zs: list of assigments computed in a previous run of the Gibbs sampler. 
+        zs: list of assignments computed in a previous run of the Gibbs sampler. 
             Optional, default None.
         
         Returns
@@ -1888,13 +2058,11 @@ zs = ipa.Gibbs_sampler_add(df,annotations,noits=1000,delta_add=0.1, all_out=True
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 261.54it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 263.50it/s]
+
 
     parsing results ...
     Done -  3.9 seconds elapsed
-
-
-    
 
 
 The function modifies the annotations dictionary by adding two additional columns to each dataframe:
@@ -1912,10 +2080,10 @@ ipa.Gibbs_sampler_add(df,annotations, noits=4000,delta_add=0.1,zs=zs)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:14<00:00, 275.46it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:15<00:00, 257.26it/s]
 
     parsing results ...
-    Done -  14.6 seconds elapsed
+    Done -  15.6 seconds elapsed
 
 
     
@@ -1932,7 +2100,19 @@ annotations[501]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1968,8 +2148,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.453117</td>
-      <td>0.677627</td>
-      <td>6.982488e-221</td>
+      <td>0.688069</td>
+      <td>1.321379e-235</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1985,8 +2165,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.362494</td>
-      <td>0.266830</td>
-      <td>6.982488e-221</td>
+      <td>0.254832</td>
+      <td>1.321379e-235</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2002,8 +2182,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.181247</td>
-      <td>0.055321</td>
-      <td>6.982488e-221</td>
+      <td>0.056654</td>
+      <td>1.321379e-235</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2019,8 +2199,8 @@ annotations[501]
       <td>None</td>
       <td>0.056386</td>
       <td>0.003143</td>
-      <td>0.000222</td>
-      <td>6.982488e-221</td>
+      <td>0.000444</td>
+      <td>1.321379e-235</td>
     </tr>
   </tbody>
 </table>
@@ -2028,7 +2208,7 @@ annotations[501]
 
 
 
-This feature is clustered with feature id=1, which most likely annotation is L-Proline M+H. As expected, considering the adductcs connections the 'post Gibbs' probability associated with L-Proline 2M+H is significantly higher.
+This feature is clustered with feature id=1, which most likely annotation is L-Proline M+H. As expected, considering the adducts connections the 'post Gibbs' probability associated with L-Proline 2M+H is significantly higher.
 
 **6. Computing posterior probabilities integrating biochemical connections**
 
@@ -2056,18 +2236,18 @@ help(ipa.Compute_Bio)
             is performed. The DB must contain the following columns in this exact
             order (optional fields can contain None):
             - id: unique id of the database entry (e.g., 'C00031') - necessary
-            - name: compund name (e.g., 'D-Glucose') - necessary
+            - name: compound name (e.g., 'D-Glucose') - necessary
             - formula: chemical formula (e.g., 'C6H12O6') - necessary
             - inchi: inchi string - optional
             - smiles: smiles string - optional
             - RT: if known, retention time range (in seconds) where this compound
                     is expected to elute (e.g., '30;60') - optional
-            - adductsPos: list of adducts that should be considered in postive mode
+            - adductsPos: list of adducts that should be considered in positive mode
                           for this entry (e.g.,'M+Na;M+H;M+') - necessary
             - adductsNeg: list of adducts that should be considered in negative
                           mode for this entry (e.g.,'M-H;M-2H') - necessary
             - description: comments on the entry - optional
-            - pk: previous knowledge on the likelihood of this compoud to be
+            - pk: previous knowledge on the likelihood of this compound to be
                  present in the sample analyse. The value has to be between 1
                  (compound likely to be present in the sample) and 0 (compound
                  cannot be present in the sample).
@@ -2076,10 +2256,10 @@ help(ipa.Compute_Bio)
             - reactions: list of reactions ids involving this compound
                         (e.g., 'R00010 R00015 R00028')-optional, but necessary if 
                         mode='reactions'.
-        annotations: If equal to None (default) all entries in the DB are conisdered 
+        annotations: If equal to None (default) all entries in the DB are considered 
                     (used to pre-compute the Bio matrix), alternatively it should be
-                    a dictonary containg all the possible annotations for the
-                    measured features. The keys of the dictionay are the unique ids
+                    a dictionary containing all the possible annotations for the
+                    measured features. The keys of the dictionary are the unique ids
                     for the features present in df. For each feature, the
                     annotations are summarized in a pandas dataframe. Output of
                     functions MS1annotation(), MS1annotation_Parallel(),
@@ -2089,7 +2269,7 @@ help(ipa.Compute_Bio)
         mode: either 'reactions' (connections are computed based on the reactions
               present in the database) or 'connections' (connections are computed
               based on the list of connections provided). Default 'reactions'.
-        connections: list of possible connections between compouds defined as
+        connections: list of possible connections between compounds defined as
                     formulas. Only necessary if mode='connections'. A list of
                     common biotransformations is provided as default.
         ncores: default value 1. Number of cores used
@@ -2118,7 +2298,19 @@ Bio
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2130,18 +2322,18 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
-      <td>C00183</td>
-      <td>C00407</td>
+      <td>C00079</td>
+      <td>C00082</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>C21092</td>
-      <td>C00407</td>
+      <td>C00079</td>
+      <td>C20807</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>C02486</td>
-      <td>C00123</td>
+      <td>C00079</td>
+      <td>C02265</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2150,23 +2342,23 @@ Bio
     </tr>
     <tr>
       <th>4</th>
+      <td>C02486</td>
+      <td>C00123</td>
+    </tr>
+    <tr>
+      <th>5</th>
       <td>C04368</td>
       <td>C00082</td>
     </tr>
     <tr>
-      <th>5</th>
-      <td>C00079</td>
-      <td>C00082</td>
-    </tr>
-    <tr>
       <th>6</th>
-      <td>C00079</td>
-      <td>C20807</td>
+      <td>C00183</td>
+      <td>C00407</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>C00079</td>
-      <td>C02265</td>
+      <td>C00407</td>
+      <td>C21092</td>
     </tr>
   </tbody>
 </table>
@@ -2185,14 +2377,26 @@ Bio
 
     computing all possible biochemical connections
     considering the provided connections ...
-    3.9 seconds elapsed
+    3.8 seconds elapsed
 
 
 
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2204,92 +2408,92 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
+      <td>C01879</td>
       <td>C22140</td>
-      <td>C04282</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>C22140</td>
-      <td>C01877</td>
+      <td>C01879</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>C22140</td>
       <td>C01879</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>C04281</td>
       <td>C22140</td>
-      <td>C22141</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>C22140</td>
       <td>C04281</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>C22140</td>
-      <td>C02237</td>
+      <td>C04281</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>6</th>
       <td>C04282</td>
-      <td>C05131</td>
+      <td>C22140</td>
     </tr>
     <tr>
       <th>7</th>
       <td>C04282</td>
-      <td>C16744</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>C01877</td>
-      <td>C05131</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>C01877</td>
+      <td>C04282</td>
       <td>C16744</td>
     </tr>
     <tr>
+      <th>9</th>
+      <td>C02237</td>
+      <td>C22140</td>
+    </tr>
+    <tr>
       <th>10</th>
+      <td>C02237</td>
       <td>C05131</td>
-      <td>C01879</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>C05131</td>
-      <td>C22141</td>
+      <td>C02237</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>C05131</td>
-      <td>C04281</td>
+      <td>C22141</td>
+      <td>C22140</td>
     </tr>
     <tr>
       <th>13</th>
+      <td>C22141</td>
       <td>C05131</td>
-      <td>C02237</td>
     </tr>
     <tr>
       <th>14</th>
-      <td>C01879</td>
+      <td>C22141</td>
       <td>C16744</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>C22141</td>
-      <td>C16744</td>
+      <td>C22140</td>
+      <td>C01877</td>
     </tr>
     <tr>
       <th>16</th>
-      <td>C04281</td>
-      <td>C16744</td>
+      <td>C05131</td>
+      <td>C01877</td>
     </tr>
     <tr>
       <th>17</th>
-      <td>C02237</td>
+      <td>C01877</td>
       <td>C16744</td>
     </tr>
   </tbody>
@@ -2317,7 +2521,7 @@ Bio=pd.read_csv('DB/allBio_connections.csv')
 
 ```
 
-Alternatively, the user can define his own biochemical connetions.
+Alternatively, the user can define his own biochemical connections.
 For example:
 L-Proline C00148
 L-Valine C00183
@@ -2350,11 +2554,11 @@ ipa.Gibbs_sampler_bio(df,annotations,Bio,noits=5000,delta_bio=0.1)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:21<00:00, 232.20it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:22<00:00, 219.14it/s]
 
 
     parsing results ...
-    Done -  21.6 seconds elapsed
+    Done -  22.9 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 992 is shown below.
@@ -2368,7 +2572,19 @@ annotations[992]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2403,8 +2619,8 @@ annotations[992]
       <td>None</td>
       <td>0.7</td>
       <td>0.317559</td>
-      <td>0.532712</td>
-      <td>0.773111</td>
+      <td>0.531683</td>
+      <td>0.774444</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2418,10 +2634,10 @@ annotations[992]
       <td>35;55</td>
       <td>-0.65851</td>
       <td>None</td>
-      <td>0.319427</td>
+      <td>0.324512</td>
       <td>0.317559</td>
-      <td>0.121545</td>
-      <td>0.177333</td>
+      <td>0.123241</td>
+      <td>0.176222</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2437,8 +2653,8 @@ annotations[992]
       <td>None</td>
       <td>0.7</td>
       <td>0.317559</td>
-      <td>0.266356</td>
-      <td>0.036222</td>
+      <td>0.265841</td>
+      <td>0.038222</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2454,8 +2670,8 @@ annotations[992]
       <td>None</td>
       <td>0.7</td>
       <td>0.047324</td>
-      <td>0.079388</td>
-      <td>0.013333</td>
+      <td>0.079234</td>
+      <td>0.011111</td>
       <td>0.0</td>
     </tr>
   </tbody>
@@ -2470,7 +2686,7 @@ The probability associated with the D-Proline M+H is significantly higher after 
 
 It is also possible to run the Gibbs sampler considering biochemical and adduct connections at the same time.
 To do so, one can use the function Gibbs_sampler_bio_add().
-The help() provides a detailed exaplanation of the function. 
+The help() provides a detailed explanation of the function. 
 
 
 ```python
@@ -2487,10 +2703,10 @@ help(ipa.Gibbs_sampler_bio_add)
         
         Parameters
         ----------
-        df: pandas dataframe containg the MS1 data. It should be the output of the
+        df: pandas dataframe containing the MS1 data. It should be the output of the
             function ipa.map_isotope_patterns()
-        annotations: a dictonary containg all the possible annotations for the
-                     measured features. The keys of the dictionay are the unique
+        annotations: a dictionary containing all the possible annotations for the
+                     measured features. The keys of the dictionary are the unique
                      ids for the features present in df. For each feature, the
                      annotations are summarized in a pandas dataframe. Output of
                      functions MS1annotation(), MS1annotation_Parallel(),
@@ -2501,17 +2717,17 @@ help(ipa.Gibbs_sampler_bio_add)
         noits: number of iterations if the Gibbs sampler to be run
         burn: number of iterations to be ignored when computing posterior
               probabilities. If None, is set to 10% of total iterations
-        delta_bio: parameter used when computiong the conditional priors.
+        delta_bio: parameter used when computing the conditional priors.
                    The parameter must be positive. The smaller the parameter the
                    more weight the adducts connections have on the posterior
                    probabilities. Default 1.
-        delta_add: parameter used when computiong the conditional priors. The
+        delta_add: parameter used when computing the conditional priors. The
                    parameter must be positive. The smaller the parameter the more
                    weight the adducts connections have on the posterior
                    probabilities. Default 1.
-        all_out: logical value. If true the list of assigments found in each
+        all_out: logical value. If true the list of assignments found in each
                 iteration is returned by the function. Default False.
-        zs: list of assigments computed in a previous run of the Gibbs sampler.
+        zs: list of assignments computed in a previous run of the Gibbs sampler.
             Optional, default None.
         
         Returns
@@ -2536,11 +2752,13 @@ ipa.Gibbs_sampler_bio_add(df,annotations,Bio,noits=5000,delta_bio=0.1,delta_add=
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 251.08it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:21<00:00, 229.81it/s]
 
     parsing results ...
-    Done -  20.0 seconds elapsed
+    Done -  21.8 seconds elapsed
+
+
+    
 
 
 
@@ -2552,7 +2770,19 @@ annotations[1]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2588,8 +2818,8 @@ annotations[1]
       <td>0.999759</td>
       <td>0.318084</td>
       <td>0.543121</td>
-      <td>0.606444</td>
-      <td>1.978131e-72</td>
+      <td>0.616222</td>
+      <td>1.835855e-82</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2605,8 +2835,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.304221</td>
-      <td>0.339111</td>
-      <td>1.978131e-72</td>
+      <td>0.335778</td>
+      <td>1.835855e-82</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2622,8 +2852,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.152110</td>
-      <td>0.054222</td>
-      <td>1.978131e-72</td>
+      <td>0.047778</td>
+      <td>1.835855e-82</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2640,7 +2870,7 @@ annotations[1]
       <td>0.045748</td>
       <td>0.000548</td>
       <td>0.000222</td>
-      <td>1.978131e-72</td>
+      <td>1.835855e-82</td>
     </tr>
   </tbody>
 </table>
@@ -2660,30 +2890,30 @@ help(ipa.simpleIPA)
 
     Help on function simpleIPA in module ipaPy2.ipa:
     
-    simpleIPA(df, ionisation, DB, adductsAll, ppm, dfMS2=None, DBMS2=None, noits=100, burn=None, delta_add=None, delta_bio=None, Bio=None, mode='reactions', CSunk=0.5, isodiff=1, ppmiso=100, ncores=1, me=0.000548579909065, ratiosd=0.9, ppmunk=None, ratiounk=None, ppmthr=None, pRTNone=None, pRTout=None, mzdCS=0, ppmCS=10, connections=['C3H5NO', 'C6H12N4O', 'C4H6N2O2', 'C4H5NO3', 'C3H5NOS', 'C6H10N2O3S2', 'C5H7NO3', 'C5H8N2O2', 'C2H3NO', 'C6H7N3O', 'C6H11NO', 'C6H11NO', 'C6H12N2O', 'C5H9NOS', 'C9H9NO', 'C5H7NO', 'C3H5NO2', 'C4H7NO2', 'C11H10N2O', 'C9H9NO2', 'C5H9NO', 'C4H4O2', 'C3H5O', 'C10H12N5O6P', 'C10H15N2O3S', 'C10H14N2O2S', 'CH2ON', 'C21H34N7O16P3S', 'C21H33N7O15P3S', 'C10H15N3O5S', 'C5H7', 'C3H2O3', 'C16H30O', 'C8H8NO5P', 'CH3N2O', 'C5H4N5', 'C10H11N5O3', 'C10H13N5O9P2', 'C10H12N5O6P', 'C9H13N3O10P2', 'C9H12N3O7P', 'C4H4N3O', 'C10H13N5O10P2', 'C10H12N5O7P', 'C5H4N5O', 'C10H11N5O4', 'C10H14N2O10P2', 'C10H12N2O4', 'C5H5N2O2', 'C10H13N2O7P', 'C9H12N2O11P2', 'C9H11N2O8P', 'C4H3N2O2', 'C9H10N2O5', 'C2H3O2', 'C2H2O', 'C2H2', 'CO2', 'CHO2', 'H2O', 'H3O6P2', 'C2H4', 'CO', 'C2O2', 'H2', 'O', 'P', 'C2H2O', 'CH2', 'HPO3', 'NH2', 'PP', 'NH', 'SO3', 'N', 'C6H10O5', 'C6H10O6', 'C5H8O4', 'C12H20O11', 'C6H11O8P', 'C6H8O6', 'C6H10O5', 'C18H30O15'])
+    simpleIPA(df, ionisation, DB, adductsAll, ppm, dfMS2=None, DBMS2=None, noits=100, burn=None, delta_add=None, delta_bio=None, Bio=None, mode='reactions', CSunk=0.5, isodiff=1, ppmiso=100, ncores=1, me=0.000548579909065, ratiosd=0.9, ppmunk=None, ratiounk=None, ppmthr=None, pRTNone=None, pRTout=None, mzdCS=0, ppmCS=10, evfilt=False, connections=['C3H5NO', 'C6H12N4O', 'C4H6N2O2', 'C4H5NO3', 'C3H5NOS', 'C6H10N2O3S2', 'C5H7NO3', 'C5H8N2O2', 'C2H3NO', 'C6H7N3O', 'C6H11NO', 'C6H11NO', 'C6H12N2O', 'C5H9NOS', 'C9H9NO', 'C5H7NO', 'C3H5NO2', 'C4H7NO2', 'C11H10N2O', 'C9H9NO2', 'C5H9NO', 'C4H4O2', 'C3H5O', 'C10H12N5O6P', 'C10H15N2O3S', 'C10H14N2O2S', 'CH2ON', 'C21H34N7O16P3S', 'C21H33N7O15P3S', 'C10H15N3O5S', 'C5H7', 'C3H2O3', 'C16H30O', 'C8H8NO5P', 'CH3N2O', 'C5H4N5', 'C10H11N5O3', 'C10H13N5O9P2', 'C10H12N5O6P', 'C9H13N3O10P2', 'C9H12N3O7P', 'C4H4N3O', 'C10H13N5O10P2', 'C10H12N5O7P', 'C5H4N5O', 'C10H11N5O4', 'C10H14N2O10P2', 'C10H12N2O4', 'C5H5N2O2', 'C10H13N2O7P', 'C9H12N2O11P2', 'C9H11N2O8P', 'C4H3N2O2', 'C9H10N2O5', 'C2H3O2', 'C2H2O', 'C2H2', 'CO2', 'CHO2', 'H2O', 'H3O6P2', 'C2H4', 'CO', 'C2O2', 'H2', 'O', 'P', 'C2H2O', 'CH2', 'HPO3', 'NH2', 'PP', 'NH', 'SO3', 'N', 'C6H10O5', 'C6H10O6', 'C5H8O4', 'C12H20O11', 'C6H11O8P', 'C6H8O6', 'C6H10O5', 'C18H30O15'])
          Wrapper function performing the whole IPA pipeline.
          
          Parameters
          ----------
-         df: pandas dataframe containg the MS1 data. It should be the output of the
+         df: pandas dataframe containing the MS1 data. It should be the output of the
              function ipa.map_isotope_patterns()
              
          DB: pandas dataframe containing the database against which the annotation
              is performed. The DB must contain the following columns in this exact
              order (optional fields can contain None):
              - id: unique id of the database entry (e.g., 'C00031') - necessary
-             - name: compund name (e.g., 'D-Glucose') - necessary
+             - name: compound name (e.g., 'D-Glucose') - necessary
              - formula: chemical formula (e.g., 'C6H12O6') - necessary
              - inchi: inchi string - optional
              - smiles: smiles string - optional
              - RT: if known, retention time range (in seconds) where this compound
                      is expected to elute (e.g., '30;60') - optional
-             - adductsPos: list of adducts that should be considered in postive mode
+             - adductsPos: list of adducts that should be considered in positive mode
                            for this entry (e.g.,'M+Na;M+H;M+') - necessary
              - adductsNeg: list of adducts that should be considered in negative
                            mode for this entry (e.g.,'M-H;M-2H') - necessary
              - description: comments on the entry - optional
-             - pk: previous knowledge on the likelihood of this compoud to be
+             - pk: previous knowledge on the likelihood of this compound to be
                   present in the sample analyse. The value has to be between 1
                   (compound likely to be present in the sample) and 0 (compound
                   cannot be present in the sample).
@@ -2704,14 +2934,16 @@ help(ipa.simpleIPA)
                             spectrum
          DBMS2: pandas dataframe containing the database containing the MS2
                 information (optional)
+         evfilt: Default value False. If true, only spectra acquired with the same
+                 collision energy are considered.
          noits: number of iterations if the Gibbs sampler to be run
          burn: number of iterations to be ignored when computing posterior
                probabilities. If None, is set to 10% of total iterations
-         delta_bio: parameter used when computiong the conditional priors.
+         delta_bio: parameter used when computing the conditional priors.
                     The parameter must be positive. The smaller the parameter the
                     more weight the adducts connections have on the posterior
                     probabilities. Default 1.
-         delta_add: parameter used when computiong the conditional priors. The
+         delta_add: parameter used when computing the conditional priors. The
                     parameter must be positive. The smaller the parameter the more
                     weight the adducts connections have on the posterior
                     probabilities. Default 1.
@@ -2732,7 +2964,7 @@ help(ipa.simpleIPA)
         
          me: accurate mass of the electron. Default 5.48579909065e-04
          ratiosd: default 0.9. It represents the acceptable ratio between predicted
-                 intensity and observed intesity of isotopes. it is used to compute
+                 intensity and observed intensity of isotopes. it is used to compute
                  the shape parameters of the lognormal distribution used to
                  calculate the isotope pattern scores as sqrt(1/ratiosd)
          ppmunk: ppm associated to the 'unknown' annotation. If not provided equal
@@ -2751,11 +2983,11 @@ help(ipa.simpleIPA)
          ppmCS: maximum ppm allowed when computing cosine similarity scores.
                 If one wants to use this parameter instead of mzdCS, this must be
                 set to 0. Default 10.
-         connections: list of possible connections between compouds defined as
+         connections: list of possible connections between compounds defined as
                      formulas. Only necessary if mode='connections'. A list of
                      common biotransformations is provided as default.
          Output:
-             annotations: a dictonary containg all the possible annotations for the measured features. The keys of the dictionay are the
+             annotations: a dictionary containing all the possible annotations for the measured features. The keys of the dictionary are the
                           unique ids for the features present in df. For each feature, the annotations are summarized in a pandas dataframe.
     
 
@@ -2770,23 +3002,20 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
                            noits=5000,delta_add=0.1)
 ```
 
-    mapping isotope patterns ....
-    0.1 seconds elapsed
+    isotopes already mapped
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    0.7 seconds elapsed
+    0.9 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:19<00:00, 263.04it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 267.02it/s]
+
 
     parsing results ...
-    Done -  19.1 seconds elapsed
-
-
-    
+    Done -  18.8 seconds elapsed
 
 
 If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler should use the following:
@@ -2796,8 +3025,7 @@ If instead one wants to use only the MS1 data and only consider the adducts conn
 annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits=5000,delta_add=0.1)
 ```
 
-    mapping isotope patterns ....
-    0.1 seconds elapsed
+    isotopes already mapped
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 information....
@@ -2806,13 +3034,11 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 270.22it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 245.87it/s]
+
 
     parsing results ...
-    Done -  18.6 seconds elapsed
-
-
-    
+    Done -  20.4 seconds elapsed
 
 
 Or if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
@@ -2825,19 +3051,18 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
                              delta_bio=0.4)
 ```
 
-    mapping isotope patterns ....
-    0.1 seconds elapsed
+    isotopes already mapped
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    0.7 seconds elapsed
+    0.9 seconds elapsed
     computing posterior probabilities including biochemical and adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 245.75it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 248.41it/s]
 
 
     parsing results ...
-    Done -  20.4 seconds elapsed
+    Done -  20.2 seconds elapsed
 

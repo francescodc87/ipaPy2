@@ -433,7 +433,8 @@ def gibbs_sampler_add_iter(indk,ks,rids,annotations,ca_id,ca,delta_add,it):
         #padd = [ca_id2.count(x) for x in idcps]
         for cp in range(0,len(p_add)): ###populating p_add by counting add connections
             idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
-            p_add[cp] = ca_id2.count(idcp)## count the number of add connections
+            if idcp!='Unknown':
+                p_add[cp] = ca_id2.count(idcp)## count the number of add connections
         p_add=[x+delta_add for x in p_add] ###computing the actual p_add 1/2
         p_add=[x/sum(p_add) for x in p_add] ###computing the actual p_add 2/2
         p0= [a * b for a, b in zip(p, p_add)] ### merging pbio and prior
@@ -521,7 +522,8 @@ def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,d
         #padd = [ca_id2.count(x) for x in idcps]
         for cp in range(0,len(p_add)): ###populating p_add by counting add connections
             idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
-            p_add[cp] = ca_id2.count(idcp)## count the number of add connections
+            if idcp!='Unknown':
+                p_add[cp] = ca_id2.count(idcp)## count the number of add connections
             idcp_list = [idcp]*len(ca_id2)
             A = list(zip(idcp_list,ca_id2))+list(zip(ca_id2,idcp_list))
             p_bio[cp] = len(set.intersection(set(Bio),set(A)))

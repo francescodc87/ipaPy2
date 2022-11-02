@@ -939,7 +939,7 @@ dfMS2.head()
 ## Usage
 The Integrated Probabilistic Annotation (IPA) method can be applied in different situations, and the ipaPy2 package allow the users to taylor the IPA pipeline around their specific needs.
 
-This brief tutorial describes all possible implementations of the IPA method.
+This brief tutorial describes the most common scenarios the IPA method can be applied to.
 
 **1. Mapping isotope patterns**
 
@@ -1314,7 +1314,7 @@ annotations=ipa.MS1annotation(df,allAddsPos,ppm=3,ncores=1)
 ```
 
     annotating based on MS1 information....
-    0.6 seconds elapsed
+    0.9 seconds elapsed
 
 
 This function returns all the possible annotations for all the mass spectrometry features (excluding the ones previously identified as isotopes). The annotations are provided in the form of a dictionary.  The keys of the dictionary are the unique ids for the features present in df.
@@ -1625,7 +1625,7 @@ The line below integrates the fragmentation data and the fragmentation database 
 ```
 
     annotating based on MS1 and MS2 information....
-    1.0 seconds elapsed
+    1.3 seconds elapsed
 
 
 The output of this function has the same structure of the one from the MSannotation() function, but it also includes the fragmentation pattern scores when the fragmentation data is available.
@@ -1890,11 +1890,13 @@ zs = ipa.Gibbs_sampler_add(df,annotations,noits=1000,delta_add=0.1, all_out=True
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 263.50it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:05<00:00, 191.42it/s]
 
     parsing results ...
-    Done -  3.9 seconds elapsed
+    Done -  5.3 seconds elapsed
+
+
+    
 
 
 The function modifies the annotations dictionary by adding two additional columns to each dataframe:
@@ -1912,13 +1914,11 @@ ipa.Gibbs_sampler_add(df,annotations, noits=4000,delta_add=0.1,zs=zs)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:15<00:00, 257.26it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:20<00:00, 190.94it/s]
+
 
     parsing results ...
-    Done -  15.6 seconds elapsed
-
-
-    
+    Done -  21.0 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 501 is shown below.
@@ -1968,8 +1968,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.453117</td>
-      <td>0.688069</td>
-      <td>1.321379e-235</td>
+      <td>0.657187</td>
+      <td>2.844927e-187</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1985,8 +1985,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.362494</td>
-      <td>0.254832</td>
-      <td>1.321379e-235</td>
+      <td>0.281493</td>
+      <td>2.844927e-187</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2002,8 +2002,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.181247</td>
-      <td>0.056654</td>
-      <td>1.321379e-235</td>
+      <td>0.060875</td>
+      <td>2.844927e-187</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2020,7 +2020,7 @@ annotations[501]
       <td>0.056386</td>
       <td>0.003143</td>
       <td>0.000444</td>
-      <td>1.321379e-235</td>
+      <td>2.844927e-187</td>
     </tr>
   </tbody>
 </table>
@@ -2130,38 +2130,38 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
+      <td>C00763</td>
+      <td>C00431</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>C02265</td>
+      <td>C00079</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>C00183</td>
+      <td>C00407</td>
+    </tr>
+    <tr>
+      <th>3</th>
       <td>C00079</td>
       <td>C00082</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>4</th>
       <td>C00079</td>
       <td>C20807</td>
     </tr>
     <tr>
-      <th>2</th>
-      <td>C00079</td>
-      <td>C02265</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>C00431</td>
-      <td>C00763</td>
-    </tr>
-    <tr>
-      <th>4</th>
+      <th>5</th>
       <td>C02486</td>
       <td>C00123</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>6</th>
       <td>C04368</td>
       <td>C00082</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>C00183</td>
-      <td>C00407</td>
     </tr>
     <tr>
       <th>7</th>
@@ -2185,7 +2185,7 @@ Bio
 
     computing all possible biochemical connections
     considering the provided connections ...
-    3.8 seconds elapsed
+    6.1 seconds elapsed
 
 
 
@@ -2204,93 +2204,93 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
-      <td>C01879</td>
-      <td>C22140</td>
+      <td>C02237</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>C01879</td>
-      <td>C05131</td>
+      <td>C02237</td>
+      <td>C22140</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>C01879</td>
-      <td>C16744</td>
+      <td>C02237</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>C16744</td>
       <td>C04281</td>
-      <td>C22140</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>C04281</td>
-      <td>C05131</td>
+      <td>C16744</td>
+      <td>C22141</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>C04281</td>
       <td>C16744</td>
+      <td>C01879</td>
     </tr>
     <tr>
       <th>6</th>
+      <td>C16744</td>
       <td>C04282</td>
-      <td>C22140</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>C04282</td>
-      <td>C05131</td>
+      <td>C16744</td>
+      <td>C01877</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>C04282</td>
-      <td>C16744</td>
+      <td>C22140</td>
+      <td>C04281</td>
     </tr>
     <tr>
       <th>9</th>
-      <td>C02237</td>
       <td>C22140</td>
+      <td>C22141</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>C02237</td>
-      <td>C05131</td>
+      <td>C22140</td>
+      <td>C01879</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>C02237</td>
-      <td>C16744</td>
+      <td>C22140</td>
+      <td>C04282</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>C22141</td>
       <td>C22140</td>
+      <td>C01877</td>
     </tr>
     <tr>
       <th>13</th>
-      <td>C22141</td>
+      <td>C04281</td>
       <td>C05131</td>
     </tr>
     <tr>
       <th>14</th>
       <td>C22141</td>
-      <td>C16744</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>C22140</td>
-      <td>C01877</td>
+      <td>C05131</td>
+      <td>C01879</td>
     </tr>
     <tr>
       <th>16</th>
       <td>C05131</td>
-      <td>C01877</td>
+      <td>C04282</td>
     </tr>
     <tr>
       <th>17</th>
+      <td>C05131</td>
       <td>C01877</td>
-      <td>C16744</td>
     </tr>
   </tbody>
 </table>
@@ -2350,11 +2350,11 @@ ipa.Gibbs_sampler_bio(df,annotations,Bio,noits=5000,delta_bio=0.1)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:22<00:00, 219.14it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:30<00:00, 162.45it/s]
 
 
     parsing results ...
-    Done -  22.9 seconds elapsed
+    Done -  30.8 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 992 is shown below.
@@ -2404,7 +2404,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.531683</td>
-      <td>0.774444</td>
+      <td>0.774000</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2421,7 +2421,7 @@ annotations[992]
       <td>0.324512</td>
       <td>0.317559</td>
       <td>0.123241</td>
-      <td>0.176222</td>
+      <td>0.178667</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2438,7 +2438,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.265841</td>
-      <td>0.038222</td>
+      <td>0.036222</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2536,13 +2536,11 @@ ipa.Gibbs_sampler_bio_add(df,annotations,Bio,noits=5000,delta_bio=0.1,delta_add=
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:21<00:00, 229.81it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:28<00:00, 175.56it/s]
+
 
     parsing results ...
-    Done -  21.8 seconds elapsed
-
-
-    
+    Done -  28.6 seconds elapsed
 
 
 
@@ -2590,8 +2588,8 @@ annotations[1]
       <td>0.999759</td>
       <td>0.318084</td>
       <td>0.543121</td>
-      <td>0.616222</td>
-      <td>1.835855e-82</td>
+      <td>0.618</td>
+      <td>7.003899e-93</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2607,8 +2605,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.304221</td>
-      <td>0.335778</td>
-      <td>1.835855e-82</td>
+      <td>0.340</td>
+      <td>7.003899e-93</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2624,8 +2622,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.152110</td>
-      <td>0.047778</td>
-      <td>1.835855e-82</td>
+      <td>0.042</td>
+      <td>7.003899e-93</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2641,8 +2639,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.045748</td>
       <td>0.000548</td>
-      <td>0.000222</td>
-      <td>1.835855e-82</td>
+      <td>0.000</td>
+      <td>7.003899e-93</td>
     </tr>
   </tbody>
 </table>
@@ -2778,16 +2776,16 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    0.9 seconds elapsed
+    1.2 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 267.02it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:25<00:00, 193.44it/s]
 
 
     parsing results ...
-    Done -  18.8 seconds elapsed
+    Done -  25.9 seconds elapsed
 
 
 If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler should use the following:
@@ -2801,16 +2799,18 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 information....
-    0.5 seconds elapsed
+    0.8 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 245.87it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:25<00:00, 192.32it/s]
 
     parsing results ...
-    Done -  20.4 seconds elapsed
+    Done -  26.1 seconds elapsed
+
+
+    
 
 
 Or if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
@@ -2827,14 +2827,14 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    0.9 seconds elapsed
+    1.3 seconds elapsed
     computing posterior probabilities including biochemical and adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:20<00:00, 248.41it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:28<00:00, 177.00it/s]
 
 
     parsing results ...
-    Done -  20.2 seconds elapsed
+    Done -  28.3 seconds elapsed
 

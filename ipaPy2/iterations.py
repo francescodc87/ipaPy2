@@ -7,6 +7,9 @@ import random
 from ipaPy2 import MS2compare
 from ipaPy2 import util
 
+__author__ = "Francesco Del Carratore"
+__maintainer__ = "Francesco Del Carratore"
+__email__ = "francesco.delcarratore@gmail.com"
 
 def all_adducts_iter(DB,adductsAll,ionisation,db):
     f = DB['formula'][db]

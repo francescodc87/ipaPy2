@@ -4,6 +4,10 @@ import numpy
 import math
 import statistics
 
+__author__ = "Francesco Del Carratore, Juraj Borka"
+__maintainer__ = "Francesco Del Carratore"
+__email__ = "francesco.delcarratore@gmail.com"
+
 class SampleFragmentsItem():
 
     def __init__(self,mz,intensity):

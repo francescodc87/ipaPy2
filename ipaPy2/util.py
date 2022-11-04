@@ -1,5 +1,9 @@
 import pandas
 
+__author__ = "Francesco Del Carratore"
+__maintainer__ = "Francesco Del Carratore"
+__email__ = "francesco.delcarratore@gmail.com"
+
 def which(self):
     """equivalent of the which function in R 
     """

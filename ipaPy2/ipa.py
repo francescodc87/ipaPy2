@@ -14,6 +14,9 @@ from tqdm import tqdm
 from ipaPy2 import util
 from ipaPy2 import iterations
 
+__author__ = "Francesco Del Carratore"
+__maintainer__ = "Francesco Del Carratore"
+__email__ = "francesco.delcarratore@gmail.com"
 
 def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
     """

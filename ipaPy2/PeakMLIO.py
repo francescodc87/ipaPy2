@@ -3,11 +3,11 @@ import gzip
 import os
 import xml.etree.ElementTree as ET
 import pandas
+from ipaPy2 import util
 
-__author__ = "Francesco Del Carratore"
-__version__ = "0.4.16"
+__author__ = "Francesco Del Carratore, Juraj Borka"
 __maintainer__ = "Francesco Del Carratore"
-__email__ = "francesco.delcarratore@gmail.com"
+__email__ = "francescodc87@gmail.com"
 
 def ReadPeakML(filename):
     """
@@ -75,3 +75,68 @@ def ReadPeakML(filename):
         
         
     return(df)
+
+
+def add_IPA_to_PeakML(file,IPA_Data,out_File):
+    """
+    Adding IPA annotation to PeakML file
+    
+    Parameters
+    ----------
+    file : string with the name (including path) of the .peakml file.
+    IPA_Data : Dictionary containing the IPA annotation
+    out_File : string with the name (including path) where the annotated
+                .peakml file will be saved.
+    
+    """
+    print('Adding IPA annotation to '+file+' and saving it as '+out_File)
+    with gzip.open(file,"rb") as g:
+        PeakMl_Data = g.read()
+        out = open("out_IPA_TEMP.txt","wb")
+        out.write(PeakMl_Data)
+
+    with open("out_IPA_TEMP.txt","r") as g:
+        lines = g.readlines()
+    
+    current_peak = None
+    IPA_data_already_exists = 0
+    looking_for_id = 0
+    exeptions = []
+        
+    with open("out_IPA_TEMP.txt","w") as g:
+        for line in lines:
+            if looking_for_id:
+                current_peak = int(line[12:-9])
+                looking_for_id = 0
+                    
+            if "					<label>id</label>" in line:
+                looking_for_id = 1
+
+            if current_peak != None:
+                if IPA_data_already_exists != 0:
+                    line = f"					<value>{util.get_annotations(current_peak,IPA_Data)[IPA_data_already_exists]}</value>"
+                    exeptions.append(IPA_data_already_exists)
+                    IPA_data_already_exists = 0
+                        
+
+                if "IPA" in line and "<label>" in line:
+                    IPA_data_already_exists = line[12:-9]
+
+                if "			</annotations>" in line:
+                    peak_data = util.input_string(util.get_annotations(current_peak,IPA_Data),exeptions)
+                    if peak_data != None:
+                        line = peak_data + line
+                    current_peak = None
+                    exeptions = []
+            g.write(line.replace('′',"[Prime]"))
+            
+    with open("out_IPA_TEMP.txt", 'rb') as f_in:
+        with gzip.open(out_File, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+                
+    with open("out_IPA_TEMP.txt","w") as g:  #issues with deleting the file so this part just deletes the content to save memory
+        g.write("")
+            
+            
+    os.remove("out_IPA_TEMP.txt")   #might want to move these to after this function is used
+    

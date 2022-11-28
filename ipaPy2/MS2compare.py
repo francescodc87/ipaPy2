@@ -6,7 +6,7 @@ import statistics
 
 __author__ = "Francesco Del Carratore, Juraj Borka"
 __maintainer__ = "Francesco Del Carratore"
-__email__ = "francesco.delcarratore@gmail.com"
+__email__ = "francescodc87@gmail.com"
 
 class SampleFragmentsItem():
 

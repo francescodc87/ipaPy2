@@ -16,7 +16,7 @@ from ipaPy2 import iterations
 
 __author__ = "Francesco Del Carratore"
 __maintainer__ = "Francesco Del Carratore"
-__email__ = "francesco.delcarratore@gmail.com"
+__email__ = "francescodc87@gmail.com"
 
 def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
     """

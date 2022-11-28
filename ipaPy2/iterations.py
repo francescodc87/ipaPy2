@@ -9,7 +9,7 @@ from ipaPy2 import util
 
 __author__ = "Francesco Del Carratore"
 __maintainer__ = "Francesco Del Carratore"
-__email__ = "francesco.delcarratore@gmail.com"
+__email__ = "francescodc87@gmail.com"
 
 def all_adducts_iter(DB,adductsAll,ionisation,db):
     f = DB['formula'][db]

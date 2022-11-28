@@ -3,9 +3,9 @@ from setuptools import find_packages, setup
 setup(
     name='ipaPy2',
     packages=find_packages(include=['ipaPy2']),
-    version='0.1.5',
+    version='1.0.0',
     description='Integrated Probabilistic Annotation (IPA) 2.0 - Python implementation ',
-    author='Dr Francesco Del Carratore',
+    author='Dr Francesco Del Carratore, Juraj Borka',
     author_email='francescodc87@gmail.com',
     url='https://github.com/francescodc87/ipaPy2',
     license='MIT',

@@ -11,6 +11,7 @@ ipaPy2 requires Python 3.9 or higher
 ```
 pip install ipaPy2
 ```
+Databases and example datasets can be downloaded directly from this library.
 
 ### Compiling from source (macOS)
 1. create a folder in which you want to put the library

@@ -111,7 +111,8 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
 
                     if ch!=Charge:
-                        pMs= [0]
+                        pMs= [(stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0))/2]*len(ISm.index)
+                        pIs= [(stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2)))/2]*len(ISm.index)
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
                     
@@ -216,7 +217,8 @@ def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
                     
                     if ch!=Charge:
-                        pMs= [0]
+                        pMs= [(stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0))/2]*len(ISm.index)
+                        pIs= [(stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2)))/2]*len(ISm.index)
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
             ###adding scores for unknown
@@ -354,7 +356,9 @@ def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
                         pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
                     if ch!=Charge:
-                        pMs= [0]
+                        pMs= [(stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0))/2]*len(ISm.index)
+                        pIs= [(stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2)))/2]*len(ISm.index)
+
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
             ###adding scores for unknown

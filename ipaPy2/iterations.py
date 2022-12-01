@@ -50,6 +50,7 @@ def all_adducts_iter(DB,adductsAll,ionisation,db):
 
 
 def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln,k):
+    Charge= df.iloc[k,7]
     mm= df.iloc[k,2]
     rtm=df.iloc[k,3]
     ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
@@ -109,8 +110,12 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
                         pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
 
+                    if ch!=Charge:
+                        pMs= [0]
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
+                    
+                        
             ###adding scores for unknown
             pisoM.append(sum([stats.norm(0, ppm).pdf(2*ppm)/stats.norm(0, ppm).pdf(0)]*len(ISm.index)))
             pisoI.append(sum([stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(ISt.iloc[0,1]+ratiounk*ISt.iloc[0,1])/stats.lognorm(scale=ISt.iloc[0,1],s=sigmaln).pdf(math.exp(ISt.iloc[0,1]-(sigmaln)**2))]*len(ISm.index)))    
@@ -150,6 +155,7 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
 
 
 def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
+    Charge= df.iloc[k,7]
     mm= df.iloc[k,2]
     rtm=df.iloc[k,3]
     ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
@@ -208,7 +214,9 @@ def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
                         ppmk =((ISt.iloc[ps,0]-ISm.iloc[ps,0])/ISt.iloc[ps,0])*(10**6)
                         pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
-
+                    
+                    if ch!=Charge:
+                        pMs= [0]
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
             ###adding scores for unknown
@@ -286,6 +294,7 @@ def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
 
 
 def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,mzdCS,ppmCS,CSunk,sigmaln,k):
+    Charge= df.iloc[k,7]
     mm= df.iloc[k,2]
     rtm=df.iloc[k,3]
     ppms = ((mm-allAdds.iloc[:,5])/allAdds.iloc[:,5])*(10**6) 
@@ -344,7 +353,8 @@ def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
                         ppmk =((ISt.iloc[ps,0]-ISm.iloc[ps,0])/ISt.iloc[ps,0])*(10**6)
                         pMs.append(stats.norm(0, ppm/2).pdf(ppmk)/stats.norm(0, ppm/2).pdf(0))
                         pIs.append(stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(ISm.iloc[ps,1])/stats.lognorm(scale=ISt.iloc[ps,1],s=sigmaln).pdf(math.exp(ISt.iloc[ps,1]-(sigmaln)**2) ))
-
+                    if ch!=Charge:
+                        pMs= [0]
                     pisoM.append(sum(pMs))
                     pisoI.append(sum(pIs))
             ###adding scores for unknown

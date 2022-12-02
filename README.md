@@ -11,7 +11,6 @@ ipaPy2 requires Python 3.9 or higher
 ```
 pip install ipaPy2
 ```
-Databases and example datasets can be downloaded directly from this library.
 
 ### Compiling from source (macOS)
 1. create a folder in which you want to put the library
@@ -140,6 +139,7 @@ adducts.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -252,6 +252,7 @@ DB.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -497,6 +498,7 @@ DBMS2.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -604,6 +606,7 @@ df1.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -918,6 +921,7 @@ dfMS2.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1046,6 +1050,7 @@ df.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1200,6 +1205,7 @@ allAddsPos.head()
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1371,6 +1377,7 @@ annotations[1]
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1470,6 +1477,7 @@ annotations[999]
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1664,6 +1672,7 @@ annotations[1]
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1762,6 +1771,7 @@ annotations[90]
 
 
 <div>
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">

@@ -469,7 +469,7 @@ DB.head()
 
 
 
-**3. MS2 database file (only required is MS2 data is available)**
+**3. MS2 database file (only required if MS2 data is available)**
 <br />
 This new implementation of the IPA method also allows the user to include MS2 data in the annotation pipeline.
 In order to exploit this functionality a MS2 spectra database must be provided.

@@ -92,7 +92,7 @@ def clusterFeatures(df,Cthr=0.8,RTwin=1,Intmode='max'):
 
 
 
-def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
+def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1,MinIsoRatio=.5):
     """
     mapping isotope patterns in MS1 data.
     
@@ -119,6 +119,9 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
     ppm:   Default value 100. Maximum ppm value allowed between 2 isotopes.
             It is very high on purpose
     ionisation: Default value 1. positive = 1, negative = -1
+    MinIsoRatio: mininum intensity ratio expressed (Default value 1%). Only
+                isotopes with intensity higher than MinIsoRatio% of the main isotope
+                are considered.
     
     Returns
     -------
@@ -222,12 +225,14 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
 
             ##fix isotope patterns
             iso_patterns = list(set(dfg.iloc[:,6]))
+            indfout =list()
             for k in iso_patterns:
                 if k!=None:
                     indpbpiso =dfg.iloc[util.which(dfg.iloc[:,6]==k),8]
                     tmp = df.iloc[indpbpiso,:].copy()
                     indpbp= tmp.iloc[util.which(tmp.iloc[:,4]==max(tmp.iloc[:,4]))[0],8]
-
+                    ratios_iso = (tmp.iloc[:,4]/max(tmp.iloc[:,4]))*100
+                    indfout=indfout+list(tmp.iloc[util.which(ratios_iso<=MinIsoRatio),8])
                     df.iloc[indpbpiso,5] = "potential bp|isotope"
                     df.iloc[indpbp,5] = "potential bp"
 
@@ -238,6 +243,10 @@ def map_isotope_patterns(df,isoDiff=1, ppm=100, ionisation=1):
             indbpiso =dfg.iloc[util.which(dfg.iloc[:,6]==df.iloc[indbp,6]),8]
             df.iloc[indbpiso,5] = "bp|isotope"
             df.iloc[indbp,5] = "bp"
+            indfout=pandas.Series(indfout,dtype='int64')
+            df.iloc[indfout,5] = None
+            df.iloc[indfout,6] = None
+            df.iloc[indfout,7] = None
         df.drop(columns=['ind'],inplace=True)
     else:
         raise Exception("""'map_isotope_patterns' method can only be applied to pandas dataframe.""")

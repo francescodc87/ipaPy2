@@ -13,12 +13,12 @@ pip install ipaPy2
 ```
 
 ### Compiling from source (macOS)
-1. create a folder in which you want to put the library
+1. Create a folder in which you want to put the library
 ```
 mkdir IPA
 cd IPA
 ```
-2. download the library. If Homebrew is not installed in your machine, you can install it from here https://brew.sh 
+2. Download the library. If Homebrew is not installed in your machine, you can install it from here https://brew.sh 
 ```
 brew install git
 ```
@@ -26,7 +26,7 @@ brew install git
 git clone https://github.com/francescodc87/ipaPy2
 cd ipaPy2
 ```
-3. create and activate a virtual environment for your folder and install the necessary libraries
+3. Create and activate a virtual environment for your folder and install the necessary libraries
 ```
 python3 -m venv ipaPy2
 source ipaPy2/bin/activate
@@ -36,11 +36,11 @@ pip install twine
 pip install pytest==4.4.1
 pip install pytest-runner==4.4
 ```
-4. run tests (optional)
+4. Run tests (optional)
 ```
 python setup.py pytest
 ```
-5. build your library
+5. Build your library
 ```
 python setup.py bdist_wheel
 ```
@@ -50,18 +50,18 @@ pip install /path/to/wheelfile.whl
 ```
 
 ### Compiling from source (Linux)
-1. create a folder in which you want to put the library
+1. Create a folder in which you want to put the library
 ```
 mkdir IPA
 cd IPA
 ```
-2. download the library
+2. Download the library
 ```
 sudo apt-get install git
 git clone https://github.com/francescodc87/ipaPy2
 cd ipaPy2
 ```
-3. create and activate a virtual environment for your folder and install the necessary libraries
+3. Create and activate a virtual environment for your folder and install the necessary libraries
 ```
 python3 -m venv ipaPy2
 source ipaPy2/bin/activate
@@ -71,11 +71,11 @@ pip install twine
 pip install pytest==4.4.1
 pip install pytest-runner==4.4
 ```
-4. run tests (optional)
+4. Run tests (optional)
 ```
 python setup.py pytest
 ```
-5. build your library
+5. Build your library
 ```
 python setup.py bdist_wheel
 ```
@@ -85,18 +85,18 @@ pip install /path/to/wheelfile.whl
 ```
 
 ### Compiling from source (Windows)
-1. create a folder in which you want to put the library
+1. Create a folder in which you want to put the library
 ```
 mkdir IPA
 cd IPA
 ```
 2. Install git (https://github.com/git-guides/install-git)
-3. download the library
+3. Download the library
 ```
 git clone https://github.com/francescodc87/ipaPy2
 cd ipaPy2
 ```
-3. create and activate a virtual environment for your folder and install the necessary libraries
+3. Create and activate a virtual environment for your folder and install the necessary libraries
 ```
 python3 -m venv ipaPy2
 source ipaPy2/bin/activate
@@ -106,11 +106,11 @@ pip install twine
 pip install pytest==4.4.1
 pip install pytest-runner==4.4
 ```
-4. run tests (optional)
+4. Run tests (optional)
 ```
 python setup.py pytest
 ```
-5. build your library
+5. Build your library
 ```
 python setup.py bdist_wheel
 ```
@@ -120,9 +120,9 @@ pip install /path/to/wheelfile.whl
 ```
 
 ## Databases
-One of the most powerful features of the IPA method is that it is able to integrate the knowledge gained from previous experiments in the annotation process. There are three files that are used as database:
+One of the most powerful features of the IPA method is that it is able to integrate the knowledge gained from previous experiments in the annotation process. There are three files that are used as the IPA database:
 
-**1. adducts file (required)**
+**1. Adducts file (required)**
 <br />
 The ipaPy2 library requires a file contains all the information required for the computation of the adducts. An adducts.csv file is provided with the package [here](DB/adducts.csv). The file contains the most common adducts. If any exotic adduct (or in-source fragment) needs to be considered, the user must modify the file accordingly. The format required for the adducts file is shown below. 
 
@@ -225,22 +225,21 @@ adducts.head()
 **2. MS1 database file (required)**
 <br />
 The IPA method requires a pandas dataframe containing the database against which the annotation is performed.
-Such dataframe must contain the following columns in this exact order (optional columns can have empty fields):
+This dataframe must contain the following columns in this exact order (optional columns can have empty fields):
 - **id**: unique id of the database entry (e.g., 'C00031') - *necessary*
 - **name**: compound name (e.g., 'D-Glucose') - *necessary*
 - **formula**: chemical formula (e.g., 'C6H12O6') - *necessary*
 - **inchi**: inchi string - *optional*
 - **smiles**: smiles string - *optional*
 - **RT**: if known, retention time range (in seconds) where this compound is expected to elute (e.g., '30;60') - *optional*
-- **adductsPos**: list of adducts that should be considered in positive mode for this entry (e.g.,'M+Na;M+H;M+') - *necessary*
+- **adductsPos**: list of adducts that should be considered in Positive mode for this entry (e.g.,'M+Na;M+H;M+') - *necessary*
 - **adductsNeg**: list of adducts that should be considered in Negative mode for this entry (e.g.,'M-H;M-2H') - *necessary*
 - **description**: comments on the entry - *optional*
-- **pk**: previous knowledge on the likelihood of this compound to be present in the sample analyse. The value has to be between 1 (compound likely to be present in the sample) and 0 (compound cannot be present in the sample).
+- **pk**: previous knowledge on the likelihood of this compound to be present in the sample analyse. The value has to be between 1 (compound highly likely to be present in the sample) and 0 (compound cannot be present in the sample).
 - **MS2**: id for the MS2 database entries related to this compound - *optional*
-- **reactions**: list of reactions ids involving this compound (e.g., 'R00010 R00015 R00028'). If required, these can be used to find possible biochemical connections - *optional* 
+- **reactions**: list of reaction ids involving this compound (e.g., 'R00010 R00015 R00028'). If required, these can be used to find possible biochemical connections - *optional* 
 
-The column names must be the ones reported here.
-While the users are strongly advised to build their own *ad-hoc* database, [here](DB/IPA_MS1.csv) you can find a relatively big example database.
+The column names must be the ones reported here. While users are strongly advised to build their own *ad-hoc* database to match their specific instrument setup and sample types, [here](DB/IPA_MS1.csv) you can find a relatively big example database.
 
 
 ```python
@@ -353,8 +352,8 @@ DB.head()
 
 
 
-This example databases was obtained considering the [KEGG database](https://www.genome.jp/kegg/compound/), the [Natural Products Atlas database](https://www.npatlas.org) and the [MoNa database](https://mona.fiehnlab.ucdavis.edu) (only compounds having at least one fragmentation spectra obtained with a QExactive).
-For each entry, only a handful of the most common adducts is considered.
+This example databases was obtained considering the [KEGG database](https://www.genome.jp/kegg/compound/), the [Natural Products Atlas database](https://www.npatlas.org) and the [MoNa database](https://mona.fiehnlab.ucdavis.edu) (only compounds having at least one fragmentation spectrum obtained with a QExactive).
+For each entry, only a handful of the most common adducts are considered.
 To fully exploit the IPA method, it is strongly recommended to constantly update the database when new knowledge is gained from previous experience. Providing a retention time window for compounds previously detected with the analytical system at hand it is particularly useful.
 For the sake of the example in this tutorial, a reduced example database is also provided.
 
@@ -472,19 +471,19 @@ DB.head()
 **3. MS2 database file (only required if MS2 data is available)**
 <br />
 This new implementation of the IPA method also allows the user to include MS2 data in the annotation pipeline.
-In order to exploit this functionality a MS2 spectra database must be provided.
+In order to exploit this functionality an MS2 spectra database must be provided.
 The MS2 database must be provided as a pandas dataframe including the following columns in this exact order:
 - **compound_id**: unique id for each compound, it must match with the ids used in the MS1 database - *necessary*
-- **id**: Unique id for the single entry (i.e., spectra) of the database *necessary*
+- **id**: unique id for the single entry (i.e., spectra) of the database - *necessary*
 - **name**: compound name (e.g., 'D-Glucose') - *necessary*
 - **formula**: chemical formula (e.g., 'C6H12O6') - *necessary*
 - **inchi**: inchi string - *optional*
 - **precursorType**: the adduct form of the precursor ion (e.g., 'M+H') - *necessary*
 - **instrument**: the type of instrument the spectrum was acquired with - *optional*
 - **collision.energy**: the collision energy level used to acquire the spectrum (e.g., '15') - *necessary*
-- **spectrum**: The actual spectrum in the form of a string in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
+- **spectrum**: the actual spectrum in the form of a string in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
 
-It is necessary that the user uses a MS2 database specific to the instrument used to acquire the data.
+It is necessary that the user uses an MS2 database specific to the instrument used to acquire the data.
 The MS2 database found [here](https://drive.google.com/file/d/15qduvtE8aSAAUCf1FE4ojcVLaTw-B2W6/view?usp=sharing), contains all the MS2 spectra found in the [MoNa](https://mona.fiehnlab.ucdavis.edu) database acquired with a QExactive. This is a relatively big file, and for the sake of this tutorial a drastically reduced version of it has been included within this repository, and can be found [here](DB/DBMS2_test_pos.csv).
 
 
@@ -904,10 +903,10 @@ df.head()
 **2. MS2 data**
 
 If fragmentation data was acquired during the experiment, it can be included in the IPA annotation process.
-To do so, the data must be organized in a pandas dataframe containing the following columns:
+To do so, the data must be organized in a pandas dataframe containing the following columns, in this exact order:
 - **id**: an unique id for each feature for which the MS2 spectrum was acquired (same as in MS1)
-- **spectrum**: string containing the spectrum inforamtion in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
-- **ev**: collision energy used to aquire the fragmentation spectrum
+- **spectrum**: string containing the spectrum information in the following format 'mz1:Int1 mz2:Int2 mz3:Int3 ...'
+- **ev**: collision energy used to acquire the fragmentation spectrum
 
 Below is reported an example:
 
@@ -969,7 +968,7 @@ dfMS2.head()
 
 
 ## Usage
-The Integrated Probabilistic Annotation (IPA) method can be applied in different situations, and the ipaPy2 package allow the users to taylor the IPA pipeline around their specific needs.
+The Integrated Probabilistic Annotation (IPA) method can be applied in different situations, and the ipaPy2 package allows the users to taylor the IPA pipeline around their specific needs.
 
 This brief tutorial describes the most common scenarios the IPA method can be applied to.
 
@@ -1127,11 +1126,11 @@ df.head()
 
 
 
-Some data processing pipelines already have a isotope mapping function and the user can used them as long as they organise the data in the correct format
+Some data processing pipelines already have an isotope mapping function and the user can use them as long as they organise the data in the correct format.
 
 **2. Compute all adducts**
 
-The second step of the pipeline consists in the calculation of all possible adducts that could be generated by the compounds included in the database.
+The second step of the pipeline consists in the calculation of all possible adducts that could be formed by the compounds included in the database.
 This is done by the function compute_all_adducts(). This function comes with a very detailed help.
 
 
@@ -1288,7 +1287,7 @@ allAddsPos.head()
 
 
 
-If the same database is used for subsequent experiments without introducing new information, it is recommended to save the results of this function into a .csv file. Therefore, the user would need to repeat this step in the future only if the DB changed.
+If the same database is used for subsequent experiments without introducing new information, it is recommended to save the results of this function into a .csv file. In this case, the user would need to repeat this step in the future only if the DB changed.
 
 **3. Annotation based on MS1 information**
 
@@ -1578,8 +1577,8 @@ annotations[999]
 
 
 
-Also in this case, all the prior probabilities associated with the four ions are exactly the same since all the ions have the same theoretical mass-to-charge ratios. However, the post probabilities are significantly different.
-Two of these ions (Coproporphyrinogen III M+2H and Coproporphyrinogen I M+2H) have charge +2, while the other two possible annotations have charge 1. The observed isotope pattern is coherent with an ion with charge +1 (i.e., difference between isotopes = 1), and this is reflected on the isotope score pattern and consequently on the post probabilities. Moreover, the retention time associated with this feature is withing the range reported for L-Phenylalanine in the database. Therefore, the post probability associated with the L-Phenylalanine 2M+H is the most likely.
+Also in this case, all the prior probabilities associated with the four ions are exactly the same since all the ions have the same theoretical mass-to-charge ratio. However, the posterior probabilities are significantly different.
+Two of these ions (Coproporphyrinogen III M+2H and Coproporphyrinogen I M+2H) have charge +2, while the other two possible annotations have charge +1. The observed isotope pattern is consistent with an ion with charge +1 (i.e., difference between isotopes = 1), and this is reflected in the isotope score pattern and consequently on the posterior probabilities. Moreover, the retention time associated with this feature is within the range reported for L-Phenylalanine in the database. Therefore, the posterior probability associated with L-Phenylalanine 2M+H is the most highest.
 
 **4. Annotation based on MS1 and MS2 information**
 
@@ -1649,7 +1648,7 @@ help(ipa.MSMSannotation)
     
 
 
-The line below integrates the fragmentation data and the fragmentation database introduced above in the annotation process. The role of the CSunk parameter should be briefly discussed here. In most cases, the fragmentation database contains fragmentation spectra only for a subset of the compounds in the database. Therefore when considering a feature for which the fragmentation spectra was acquired, it is often the case that the cosine similarity can be only computed for a subset of the possible annotations. The CSunk value is then assigned to the other possible annotations for comparison.
+The line below integrates the fragmentation data and the fragmentation database introduced above in the annotation process. The role of the CSunk (“cosine unknown”) parameter should be briefly discussed here. In most cases, the fragmentation database contains fragmentation spectra only for a subset of the compounds in the database. Therefore, when considering a feature for which the fragmentation spectra was acquired, it is often the case that the cosine similarity can only be computed for a subset of the possible annotations. The CSunk value is then assigned to the other possible annotations for comparison.
 
 
 ```python
@@ -1660,7 +1659,7 @@ The line below integrates the fragmentation data and the fragmentation database 
     1.3 seconds elapsed
 
 
-The output of this function has the same structure of the one from the MSannotation() function, but it also includes the fragmentation pattern scores when the fragmentation data is available.
+The output of this function has the same structure as the one from the MSannotation() function, but it also includes the fragmentation pattern scores when the fragmentation data is available.
 As an example, possible annotations for the feature associated with id=1 is shown below:
 
 
@@ -1758,7 +1757,7 @@ annotations[1]
 
 
 
-In this case the cosine similarity score for the annotation L-Proline M+H is very high, therefore the post probability associate with it is higher than the one obtained without considering the MS2 data.
+In this case, the cosine similarity score for the annotation L-Proline M+H is very high, therefore the posterior probability associated with it is higher than the one obtained without considering the MS2 data.
 
 Here another example for a feature having a very similar mass-to-charge ratio.
 
@@ -1857,12 +1856,12 @@ annotations[90]
 
 
 
-In this case, the cosine similarity score for the annotation L-Proline M+H is not very high. Moreover, the retention time assigned to this feature is outside both retention time ranges reported in the database for L-Proline and 3-Acetamidopropanal. Therefore, the most likely annotation for this feature is D-Proline M+H.
+In this case, the cosine similarity score for the annotation L-Proline M+H is not very high. Moreover, the retention time assigned to this feature is outside both retention time ranges reported in the database for L-Proline and 3-Acetamidopropanal. Therefore, the most likely annotation for this feature is D-Proline M+H, the one annotation not rejected directly by the available evidence.
 
 **5. Computing posterior probabilities integrating adducts connections**
 
 Until this point, the putative annotations and the associated probabilities computed for each feature are independent from each other. However, the IPA method can be used to update the probabilities by considering the possible relationship between annotations.
-For example, the Gibbs_sampler_add() function uses a Gibbs sampler to estimate the posterior probabilities obtained by considering all possible adducts connections.
+For example, the Gibbs_sampler_add() function uses a Gibbs sampler to estimate the posterior probabilities obtained by considering all possible adduct connections.
 
 The help() provides a detailed description of this function:
 
@@ -1935,7 +1934,7 @@ The function modifies the annotations dictionary by adding two additional column
 - **post Gibbs:** posterior probabilities obtained from the Gibbs sampler.
 - **chi-square pval:** In order to see if the posterior probabilities obtained are statistically different from the priors, a chi-square test is used. The obtained p-value is reported in this coloumn.
 
-If the all_out=True, the function also returns the full list of assignments computed. If provided as an input the the Gibbs sampler it allows to restart it from where you finished.
+If all_out=True, the function also returns the full list of assignments computed. If provided as an input to the Gibbs sampler, it allows to restart it from where you finished.
 
 
 ```python
@@ -2060,14 +2059,14 @@ annotations[501]
 
 
 
-This feature is clustered with feature id=1, which most likely annotation is L-Proline M+H. As expected, considering the adducts connections the 'post Gibbs' probability associated with L-Proline 2M+H is significantly higher.
+This feature is clustered with feature id=1, the most likely annotation of which is L-Proline M+H. As expected, considering the adducts connections the 'post Gibbs' probability associated with L-Proline 2M+H is significantly higher than the alternative.
 
 **6. Computing posterior probabilities integrating biochemical connections**
 
-The IPA method can also update the probabilities associated to each possible annotations by also considering all possible connections.
+The IPA method can also update the probabilities associated to each possible annotations by considering all possible biochemical connections.
 
-Before doing so, it is necessary to provide a pandas dataframe reporting which compounds can be consired biochemically related.
-The function Compute_Bio() can be used to compute such dataframe.
+Before doing so, it is necessary to provide a pandas dataframe reporting which compounds can be considered biochemically related.
+The function Compute_Bio() can be used to compute such a dataframe.
 The help() provides a detailed description of this function:
 
 
@@ -2133,7 +2132,7 @@ help(ipa.Compute_Bio)
 
 
 According to the value assigned to the 'mode' parameter, the function can compute all possible biochemical connections in two ways.
-If mode='reactions', the function connects the compounds that share the same reaction(s) id according to what reported in the database.
+If mode='reactions', the function connects the compounds that share the same reaction id(s) according to what is reported in the database.
 
 
 ```python
@@ -2330,7 +2329,7 @@ Bio
 
 
 
-Depending on the size of the database and the dataset, computing all possible biochemical connections can be extremely computational demanding and drastically increase the computation time needed for the annotation. For this reason, a precomputed list of biochemical connections based on the database provided (computed based on 'reaction' or 'connections' mode) is included in the library and can be used directly without the need of computing the biochemical connections.
+Depending on the size of the database and the dataset, computing all possible biochemical connections can be extremely computationally demanding and can drastically increase the computation time needed for the annotation. For this reason, a precomputed list of biochemical connections based on the database provided (computed based on 'reaction' or 'connections' mode) is included in the library and can be used directly without the need of computing the biochemical connections.
 
 
 ```python
@@ -2349,7 +2348,7 @@ Bio=pd.read_csv('DB/allBio_connections.csv')
 
 ```
 
-Alternatively, the user can define his own biochemical connections.
+Alternatively, the user can define their own biochemical connections.
 For example:
 L-Proline C00148
 L-Valine C00183
@@ -2496,7 +2495,7 @@ annotations[992]
 
 
 
-The probability associated with the D-Proline M+H is significantly higher after considering the biochemical connections. This is because, D-Proline is biochemically connected to L-Proline (proline racemase), and the most likely annotation for the feature id=1 is L-Proline M+H (>50%).
+The probability associated with the D-Proline M+H is significantly higher after considering the biochemical connections. This is because D-Proline is biochemically connected to L-Proline (by proline racemase), and the most likely annotation for the feature id=1 is L-Proline M+H (>50%).
 
 **7. Computing posterior probabilities integrating both adducts and biochemical connections**
 
@@ -2682,7 +2681,7 @@ annotations[1]
 
 **8. Running the whole pipeline with a single function**
 
-Finally, the ipaPy2 library also include a wrapper function that allows to run the whole IPA pipeline in one step.
+Finally, the ipaPy2 library also include a wrapper function that allows running the whole IPA pipeline in one step.
 A detailed description of the function can be accessed with the help.
 
 
@@ -2794,7 +2793,7 @@ help(ipa.simpleIPA)
     
 
 
-Based on the parameters included in the function, the end-result of this function will be different.
+Based on the parameters passed on to the function, the end-result of this function will be different.
 
 For example, if one wants to use both the MS1 and MS2 data and not use the Gibbs sampler, the following should be used:
 
@@ -2820,7 +2819,7 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     Done -  25.9 seconds elapsed
 
 
-If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler should use the following:
+If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler, one should use the following:
 
 
 ```python
@@ -2845,7 +2844,7 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits
     
 
 
-Or if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
+Or, if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
 
 
 ```python

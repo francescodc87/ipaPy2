@@ -1,7 +1,7 @@
 # ipaPy2
 Python implementation of the Integrated Probabilistic Annotation (IPA) - A Bayesian annotation method for LC/MS data integrating biochemical relations,
 isotope patterns and adduct formation.
-![alt text](figure_paper2.png)
+![alt text](figure_paper.png)
 
 ## Installation
 ipaPy2 requires Python 3.9 or higher

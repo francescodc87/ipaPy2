@@ -350,7 +350,7 @@ def MS1annotation(df,allAdds,ppm,me = 5.48579909065e-04,ratiosd=0.9,
             to ppm.
     ratiounk: isotope ratio associated to the 'unknown' annotation. If not
               provided equal to 0.5
-    ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to
+    ppmthr: Maximum ppm possible for the annotations. If not provided equal to
             2*ppm
     pRTNone: Multiplicative factor for the RT if no RTrange present in the
              database. If not provided equal to 0.8

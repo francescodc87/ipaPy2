@@ -1,7 +1,7 @@
 from ipaPy2 import ipa
 import pickle
 
-def test_simpleIPA():
+def test_simpleIPA1():
     file = open('tests/test_simpleIPA.pkl','rb')
     df=pickle.load(file)
     DB=pickle.load(file)
@@ -26,7 +26,19 @@ def test_simpleIPA():
     assert(annotations[501].equals(expected1[501]))
     assert(annotations[4].equals(expected1[4]))
     assert(annotations[999].equals(expected1[999]))
-    
+
+def test_simpleIPA2():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
+
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                             ppm=5, dfMS2=None, DBMS2=None, noits=1000,
                             burn=None, delta_add=None, delta_bio=None,
@@ -41,6 +53,17 @@ def test_simpleIPA():
     assert(annotations[4].equals(expected1[4]))
     assert(annotations[999].equals(expected1[999]))
 
+def test_simpleIPA3():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                             ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                             burn=None, delta_add=None, delta_bio=None,
@@ -54,7 +77,18 @@ def test_simpleIPA():
     assert(annotations[501].equals(expected2[501]))
     assert(annotations[4].equals(expected2[4]))
     assert(annotations[999].equals(expected2[999]))
-    
+
+def test_simpleIPA4():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()   
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                             ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                             burn=None, delta_add=None, delta_bio=None,
@@ -69,7 +103,18 @@ def test_simpleIPA():
     assert(annotations[4].equals(expected2[4]))
     assert(annotations[999].equals(expected2[999]))
     
-    
+def test_simpleIPA5():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
+
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                                 burn=None, delta_add=0.1, delta_bio=None,
@@ -100,7 +145,17 @@ def test_simpleIPA():
     float(ex3['post Gibbs'][ex3['id']=='Unknown']))
     
     
-    
+def test_simpleIPA6():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()    
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                                 burn=None, delta_add=0.1, delta_bio=None,
@@ -130,7 +185,17 @@ def test_simpleIPA():
     float(ex3['post Gibbs'][ex3['id']=='C02265'])> \
     float(ex3['post Gibbs'][ex3['id']=='Unknown']))
     
-
+def test_simpleIPA7():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                                 burn=None, delta_add=None, delta_bio=0.1,
@@ -159,7 +224,18 @@ def test_simpleIPA():
     assert(float(ex3['post Gibbs'][ex3['id']=='C00079'])> \
     float(ex3['post Gibbs'][ex3['id']=='C02265'])> \
     float(ex3['post Gibbs'][ex3['id']=='Unknown']))
-    
+
+def test_simpleIPA8():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()    
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                                 burn=None, delta_add=None, delta_bio=0.1,
@@ -189,6 +265,17 @@ def test_simpleIPA():
     float(ex3['post Gibbs'][ex3['id']=='C02265'])> \
     float(ex3['post Gibbs'][ex3['id']=='Unknown']))
    
+def test_simpleIPA9():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
 
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
@@ -219,7 +306,19 @@ def test_simpleIPA():
     float(ex3['post Gibbs'][ex3['id']=='C02265'])> \
     float(ex3['post Gibbs'][ex3['id']=='Unknown']))
     
-    
+
+def test_simpleIPA10():
+    file = open('tests/test_simpleIPA.pkl','rb')
+    df=pickle.load(file)
+    DB=pickle.load(file)
+    adducts=pickle.load(file)
+    dfMS2=pickle.load(file)
+    DBMS2=pickle.load(file)
+    Bio=pickle.load(file)
+    expected1=pickle.load(file)
+    expected2=pickle.load(file)
+    file.close()
+
     annotations = ipa.simpleIPA(df, ionisation=1, DB=DB, adductsAll=adducts,
                                 ppm=5, dfMS2=dfMS2, DBMS2=DBMS2, noits=1000,
                                 burn=None, delta_add=0.1, delta_bio=0.1,

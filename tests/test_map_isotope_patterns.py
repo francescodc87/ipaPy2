@@ -8,10 +8,10 @@ def test_map_isotope_patterns():
     expected2 = pickle.load(file)
     file.close()
     
-    df_out =df.copy()
-    ipa.map_isotope_patterns(df_out,ionisation=1)
-    assert(df_out.equals(expected1))
+    df_out1 =df.copy()
+    ipa.map_isotope_patterns(df_out1,ionisation=1)
+   
+    df_out2 =df.copy()
+    ipa.map_isotope_patterns(df_out2,ionisation=-1)
     
-    df_out =df.copy()
-    ipa.map_isotope_patterns(df_out,ionisation=-1)
-    assert(df_out.equals(expected2))
+    assert(df_out1.equals(expected1) and df_out2.equals(expected2))

@@ -6,7 +6,7 @@ import pickle
 
 
 def test_clusterFeatures():
-    file = open('test_clusterFeatures.pkl', 'rb')
+    file = open('tests/test_clusterFeatures.pkl', 'rb')
     df= pickle.load(file)
     expected = pickle.load(file)
     file.close()
@@ -15,7 +15,7 @@ def test_clusterFeatures():
 
 
 def test_map_isotope_patterns():
-    file = open('test_map_isotope_patterns.pkl', 'rb')
+    file = open('tests/test_map_isotope_patterns.pkl', 'rb')
     df= pickle.load(file)
     expected1 = pickle.load(file)
     expected2 = pickle.load(file)
@@ -32,7 +32,7 @@ def test_map_isotope_patterns():
 
 
 def test_compute_all_adducts():
-    file = open('test_compute_all_adducts.pkl', 'rb')
+    file = open('tests/test_compute_all_adducts.pkl', 'rb')
     adducts=pickle.load(file)
     DB=pickle.load(file)
     expected1 = pickle.load(file)
@@ -54,7 +54,7 @@ def test_compute_all_adducts():
 
 
 def test_MS1annotation():
-    file = open('test_MS1annotation.pkl', 'rb')
+    file = open('tests/test_MS1annotation.pkl', 'rb')
     df=pickle.load(file)
     allAdds=pickle.load(file)
     expected1 = pickle.load(file)
@@ -82,7 +82,7 @@ def test_MS1annotation():
     
 
 def test_MSMSannotation():
-    file = open('test_MS2annotation.pkl', 'rb')
+    file = open('tests/test_MS2annotation.pkl', 'rb')
     df=pickle.load(file)
     allAdds=pickle.load(file)
     dfMS2=pickle.load(file)
@@ -115,7 +115,7 @@ def test_MSMSannotation():
 
 
 def test_Compute_Bio():
-    file = open('test_Compute_Bio.pkl', 'rb')
+    file = open('tests/test_Compute_Bio.pkl', 'rb')
     DB=pickle.load(file)
     annotations=pickle.load(file)
     expected1 = pickle.load(file)
@@ -133,7 +133,7 @@ def test_Compute_Bio():
     
     
 def test_Gibbs_sampler_add():
-    file = open('test_Gibbs_sampler_add.pkl', 'rb')
+    file = open('tests/test_Gibbs_sampler_add.pkl', 'rb')
     df=pickle.load(file)
     annotations=pickle.load(file)
     expected1 = pickle.load(file)
@@ -162,7 +162,7 @@ def test_Gibbs_sampler_add():
     float(ex1['post Gibbs'][ex1['id']=='Unknown']))
 
 def test_Gibbs_sampler_bio():
-    file = open('test_Gibbs_sampler_bio.pkl', 'rb')
+    file = open('tests/test_Gibbs_sampler_bio.pkl', 'rb')
     df=pickle.load(file)
     Bio=pickle.load(file)
     annotations=pickle.load(file)
@@ -192,7 +192,7 @@ def test_Gibbs_sampler_bio():
       
 
 def test_Gibbs_sampler_bio_add():
-    file = open('test_Gibbs_sampler_bio.pkl', 'rb')
+    file = open('tests/test_Gibbs_sampler_bio.pkl', 'rb')
     df=pickle.load(file)
     Bio=pickle.load(file)
     annotations=pickle.load(file)
@@ -223,7 +223,7 @@ def test_Gibbs_sampler_bio_add():
   
 
 def test_simpleIPA():
-    file = open('test_simpleIPA.pkl','rb')
+    file = open('tests/test_simpleIPA.pkl','rb')
     df=pickle.load(file)
     DB=pickle.load(file)
     adducts=pickle.load(file)

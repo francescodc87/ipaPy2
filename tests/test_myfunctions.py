@@ -1,7 +1,5 @@
 from ipaPy2 import MS2compare
 from ipaPy2 import ipa
-import pandas as pd
-import numpy as np
 import pickle
 
 

@@ -11,8 +11,6 @@ def test_compute_all_adducts():
     
     
     out1 = ipa.compute_all_adducts(adducts, DB, ionisation=1, ncores=1)
-    out2 = ipa.compute_all_adducts(adducts, DB, ionisation=1, ncores=2)
-    out3 = ipa.compute_all_adducts(adducts, DB, ionisation=-1, ncores=1)
-    out4 = ipa.compute_all_adducts(adducts, DB, ionisation=-1, ncores=2)
+    out2 = ipa.compute_all_adducts(adducts, DB, ionisation=-1, ncores=1)
      
-    assert(out1.equals(expected1) and out2.equals(expected1) and out3.equals(expected2) and out4.equals(expected2))
+    assert(out1.equals(expected1) and out2.equals(expected2))

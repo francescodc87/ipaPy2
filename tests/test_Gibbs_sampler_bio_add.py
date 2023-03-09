@@ -11,23 +11,23 @@ def test_Gibbs_sampler_bio_add():
     ipa.Gibbs_sampler_bio_add(df, annotations, Bio, noits=1000, burn=None, delta_bio=.1, delta_add=0.1,
                               all_out=False, zs=None)
     
-    ex1=annotations[1]
-    assert(float(ex1['post Gibbs'][ex1['id']=='C00148'])> \
-    float(ex1['post Gibbs'][ex1['id']=='C00763'])> \
-    float(ex1['post Gibbs'][ex1['id']=='Unknown']))
+    ex3=annotations[1]
+    assert(float(ex3['post Gibbs'][ex3['id']=='C00148'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='C00763'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='Unknown'].iloc[0]))
     
-    ex1=annotations[501]
-    assert(float(ex1['post Gibbs'][ex1['id']=='C00148'])> \
-    float(ex1['post Gibbs'][ex1['id']=='C00763'])> \
-    float(ex1['post Gibbs'][ex1['id']=='Unknown']))
+    ex3=annotations[501]
+    assert(float(ex3['post Gibbs'][ex3['id']=='C00148'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='C00763'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='Unknown'].iloc[0]))
     
-    ex1=annotations[4]
-    assert(float(ex1['post Gibbs'][ex1['id']=='C00079'])> \
-    float(ex1['post Gibbs'][ex1['id']=='C02265'])> \
-    float(ex1['post Gibbs'][ex1['id']=='Unknown']))
+    ex3=annotations[4]
+    assert(float(ex3['post Gibbs'][ex3['id']=='C00079'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='C02265'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='Unknown'].iloc[0]))
     
-    ex1=annotations[999]
-    assert(float(ex1['post Gibbs'][ex1['id']=='C00079'])> \
-    float(ex1['post Gibbs'][ex1['id']=='C02265'])> \
-    float(ex1['post Gibbs'][ex1['id']=='Unknown']))
+    ex3=annotations[999]
+    assert(float(ex3['post Gibbs'][ex3['id']=='C00079'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='C02265'].iloc[0])> \
+    float(ex3['post Gibbs'][ex3['id']=='Unknown'].iloc[0]))
   

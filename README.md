@@ -1364,16 +1364,13 @@ For each feature, all possible annotations are summarised in a dataframe includi
 - **prior:** Probabilities associated with each possible annotation computed by only considering the mz values (i.e., only considering ppm)
 - **post:** Probabilities associated with each possible annotation computed by integrating all the additional information available: retention time range, ppm, isotope pattern score and prior knowledge.
 
-As an example, possible annotations for the feature associated with id=1 is shown below:
+As an example, possible annotations for the feature associated with id=1 (m/z=116.0705438, RT=45.77) is shown below:
 
 
 
 ```python
 annotations[1]
 ```
-
-
-
 
 <div>
 
@@ -1464,6 +1461,7 @@ annotations[1]
 
 It should be noticed that in this example, the prior probabilities associated with L-Proline M+H, D-Proline M+H and 3-Acetamidopropanal are exactly the same. This is because all three ions have exactly the same theoretical mass.
 However, the post probabilities are different. This is because the retention time associated with this feature is within the retention range reported in the database for L-Proline and outside the one reported for 3-Acetamidopropanal.
+An expert in LC/MS-based mass spectrometry would argue that with most chromatographic columns stereoisomers such as L- and D-Proline would share the same RT range. While this is likely to be correct, it must be noted that the IPA method can only use the information present in the database. When populating it, we opted for a more agnostic approach and only included RT ranges for compounds that where actually detected as standards with our experimental setting. If the user wants to include the notion that ‘stereoisomers share the same RT ranges’, they should simply add this information in the database.
 
 Here another example:
 
@@ -1759,7 +1757,7 @@ annotations[1]
 
 In this case, the cosine similarity score for the annotation L-Proline M+H is very high, therefore the posterior probability associated with it is higher than the one obtained without considering the MS2 data.
 
-Here another example for a feature having a very similar mass-to-charge ratio.
+Here another example for a feature having a very similar mass-to-charge ratio (id=90, m/z=117.0705223, RT=63.45).
 
 
 ```python
@@ -1857,6 +1855,7 @@ annotations[90]
 
 
 In this case, the cosine similarity score for the annotation L-Proline M+H is not very high. Moreover, the retention time assigned to this feature is outside both retention time ranges reported in the database for L-Proline and 3-Acetamidopropanal. Therefore, the most likely annotation for this feature is D-Proline M+H, the one annotation not rejected directly by the available evidence.
+It should be noted that the fragmentation pattern score has a rather weak effect on the posterior probability associated with L-Proline given how close it is to the fragmentation pattern score associated features not having MS2 info in the database (CSunk=0.7). The main reason why the D-Proline annotation appears to be the most likely is due to the fact that the retention time associated to this feature (63.45 s) is outside the retention time ranges associated with L-Proline and 3-Acetamidopropanal.
 
 **5. Computing posterior probabilities integrating adducts connections**
 

@@ -537,15 +537,18 @@ def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,d
         for r in range(0,len(rids)):
             if rids[r]==rid and r!=k:
                 ca_id2.append(ca_id[r]) ## 
-
-        #padd = [ca_id2.count(x) for x in idcps]
+   
         for cp in range(0,len(p_add)): ###populating p_add by counting add connections
             idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
             if idcp!='Unknown':
                 p_add[cp] = ca_id2.count(idcp)## count the number of add connections
+        
+        for cp in range(0,len(p_bio)): ###populating p_bio by counting bio connections
+            idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_bio
             idcp_list = [idcp]*len(ca_id3)
             A = list(zip(idcp_list,ca_id3))+list(zip(ca_id3,idcp_list))
-            p_bio[cp] = len(set.intersection(set(Bio),set(A)))
+            p_bio[cp] = len(set.intersection(set(Bio),set(A)))        
+       
         p_add=[x+delta_add for x in p_add] ###computing the actual p_add 1/2
         p_add=[x/sum(p_add) for x in p_add] ###computing the actual p_add 2/2
         p_bio=[x+delta_bio for x in p_bio] ###computing the actual p_bio 1/2

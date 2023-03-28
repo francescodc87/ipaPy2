@@ -532,6 +532,8 @@ def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,d
         p_bio = [0]*len(tmp.index) ### initialize the p_add vector
         p_add = [0]*len(tmp.index) ### initialize the p_add vector
         ca_id2=[] # contains the the current annotation ids for the masses with the same the relation id
+        ca_id3=ca_id.copy() # contains the the current annotation
+        del ca_id3[i] # without the annotation for the mass considered 
         for r in range(0,len(rids)):
             if rids[r]==rid and r!=k:
                 ca_id2.append(ca_id[r]) ## 
@@ -541,8 +543,8 @@ def gibbs_sampler_bio_add_iter(indk,ks,rids,annotations,Bio,ca_id,ca,delta_bio,d
             idcp = tmp.iloc[cp,0] ### annotation considered for this position of p_add
             if idcp!='Unknown':
                 p_add[cp] = ca_id2.count(idcp)## count the number of add connections
-            idcp_list = [idcp]*len(ca_id2)
-            A = list(zip(idcp_list,ca_id2))+list(zip(ca_id2,idcp_list))
+            idcp_list = [idcp]*len(ca_id3)
+            A = list(zip(idcp_list,ca_id3))+list(zip(ca_id3,idcp_list))
             p_bio[cp] = len(set.intersection(set(Bio),set(A)))
         p_add=[x+delta_add for x in p_add] ###computing the actual p_add 1/2
         p_add=[x/sum(p_add) for x in p_add] ###computing the actual p_add 2/2

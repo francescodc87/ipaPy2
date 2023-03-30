@@ -139,7 +139,19 @@ adducts.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -239,7 +251,8 @@ This dataframe must contain the following columns in this exact order (optional 
 - **MS2**: id for the MS2 database entries related to this compound - *optional*
 - **reactions**: list of reaction ids involving this compound (e.g., 'R00010 R00015 R00028'). If required, these can be used to find possible biochemical connections - *optional* 
 
-The column names must be the ones reported here. While users are strongly advised to build their own *ad-hoc* database to match their specific instrument setup and sample types, [here](DB/IPA_MS1.csv) you can find a relatively big example database.
+The column names must be the ones reported here.
+While users are strongly advised to build their own *ad-hoc* database to match their specific instrument setup and sample types, [here](DB/IPA_MS1.csv) you can find a relatively big example database.
 
 
 ```python
@@ -251,7 +264,19 @@ DB.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -367,7 +392,19 @@ DB.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -497,7 +534,19 @@ DBMS2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -605,7 +654,19 @@ df1.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -678,7 +739,19 @@ df2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -841,7 +914,19 @@ df.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -920,7 +1005,19 @@ dfMS2.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -983,7 +1080,7 @@ help(ipa.map_isotope_patterns)
 
     Help on function map_isotope_patterns in module ipaPy2.ipa:
     
-    map_isotope_patterns(df, isoDiff=1, ppm=100, ionisation=1)
+    map_isotope_patterns(df, isoDiff=1, ppm=100, ionisation=1, MinIsoRatio=0.5)
         mapping isotope patterns in MS1 data.
         
         Parameters
@@ -1009,6 +1106,9 @@ help(ipa.map_isotope_patterns)
         ppm:   Default value 100. Maximum ppm value allowed between 2 isotopes.
                 It is very high on purpose
         ionisation: Default value 1. positive = 1, negative = -1
+        MinIsoRatio: mininum intensity ratio expressed (Default value 1%). Only
+                    isotopes with intensity higher than MinIsoRatio% of the main isotope
+                    are considered.
         
         Returns
         -------
@@ -1049,7 +1149,19 @@ df.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1204,7 +1316,19 @@ allAddsPos.head()
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1322,7 +1446,7 @@ help(ipa.MS1annotation)
                 to ppm.
         ratiounk: isotope ratio associated to the 'unknown' annotation. If not
                   provided equal to 0.5
-        ppmthr: Maximum ppm possible for the annotations. Ff not provided equal to
+        ppmthr: Maximum ppm possible for the annotations. If not provided equal to
                 2*ppm
         pRTNone: Multiplicative factor for the RT if no RTrange present in the
                  database. If not provided equal to 0.8
@@ -1345,7 +1469,7 @@ annotations=ipa.MS1annotation(df,allAddsPos,ppm=3,ncores=1)
 ```
 
     annotating based on MS1 information....
-    0.9 seconds elapsed
+    0.5 seconds elapsed
 
 
 This function returns all the possible annotations for all the mass spectrometry features (excluding the ones previously identified as isotopes). The annotations are provided in the form of a dictionary.  The keys of the dictionary are the unique ids for the features present in df.
@@ -1372,8 +1496,23 @@ As an example, possible annotations for the feature associated with id=1 (m/z=11
 annotations[1]
 ```
 
-<div>
 
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1461,6 +1600,7 @@ annotations[1]
 
 It should be noticed that in this example, the prior probabilities associated with L-Proline M+H, D-Proline M+H and 3-Acetamidopropanal are exactly the same. This is because all three ions have exactly the same theoretical mass.
 However, the post probabilities are different. This is because the retention time associated with this feature is within the retention range reported in the database for L-Proline and outside the one reported for 3-Acetamidopropanal.
+
 An expert in LC/MS-based mass spectrometry would argue that with most chromatographic columns stereoisomers such as L- and D-Proline would share the same RT range. While this is likely to be correct, it must be noted that the IPA method can only use the information present in the database. When populating it, we opted for a more agnostic approach and only included RT ranges for compounds that where actually detected as standards with our experimental setting. If the user wants to include the notion that ‘stereoisomers share the same RT ranges’, they should simply add this information in the database.
 
 Here another example:
@@ -1474,7 +1614,19 @@ annotations[999]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1504,10 +1656,10 @@ annotations[999]
       <td>1</td>
       <td>120;160</td>
       <td>-0.941814</td>
-      <td>0.472049</td>
+      <td>4.720493e-01</td>
       <td>None</td>
       <td>0.240106</td>
-      <td>0.550778</td>
+      <td>5.507775e-01</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1519,10 +1671,10 @@ annotations[999]
       <td>1</td>
       <td>None</td>
       <td>-0.941814</td>
-      <td>0.472049</td>
+      <td>4.720493e-01</td>
       <td>None</td>
       <td>0.240106</td>
-      <td>0.440622</td>
+      <td>4.406220e-01</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1534,10 +1686,10 @@ annotations[999]
       <td>None</td>
       <td>None</td>
       <td>3.000000</td>
-      <td>0.055901</td>
+      <td>5.590124e-02</td>
       <td>None</td>
       <td>0.039575</td>
-      <td>0.008600</td>
+      <td>8.600366e-03</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1549,10 +1701,10 @@ annotations[999]
       <td>2</td>
       <td>None</td>
       <td>-0.941814</td>
-      <td>0.000000</td>
+      <td>5.590124e-08</td>
       <td>None</td>
       <td>0.240106</td>
-      <td>0.000000</td>
+      <td>5.217954e-08</td>
     </tr>
     <tr>
       <th>4</th>
@@ -1564,10 +1716,10 @@ annotations[999]
       <td>2</td>
       <td>None</td>
       <td>-0.941814</td>
-      <td>0.000000</td>
+      <td>5.590124e-08</td>
       <td>None</td>
       <td>0.240106</td>
-      <td>0.000000</td>
+      <td>5.217954e-08</td>
     </tr>
   </tbody>
 </table>
@@ -1654,7 +1806,7 @@ The line below integrates the fragmentation data and the fragmentation database 
 ```
 
     annotating based on MS1 and MS2 information....
-    1.3 seconds elapsed
+    0.7 seconds elapsed
 
 
 The output of this function has the same structure as the one from the MSannotation() function, but it also includes the fragmentation pattern scores when the fragmentation data is available.
@@ -1669,7 +1821,19 @@ annotations[1]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1768,7 +1932,19 @@ annotations[90]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1920,10 +2096,10 @@ zs = ipa.Gibbs_sampler_add(df,annotations,noits=1000,delta_add=0.1, all_out=True
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:05<00:00, 191.42it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 1000/1000 [00:03<00:00, 276.18it/s]
 
     parsing results ...
-    Done -  5.3 seconds elapsed
+    Done -  3.7 seconds elapsed
 
 
     
@@ -1944,11 +2120,11 @@ ipa.Gibbs_sampler_add(df,annotations, noits=4000,delta_add=0.1,zs=zs)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:20<00:00, 190.94it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 4000/4000 [00:14<00:00, 277.93it/s]
 
 
     parsing results ...
-    Done -  21.0 seconds elapsed
+    Done -  14.5 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 501 is shown below.
@@ -1962,7 +2138,19 @@ annotations[501]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1998,8 +2186,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.453117</td>
-      <td>0.657187</td>
-      <td>2.844927e-187</td>
+      <td>0.689625</td>
+      <td>2.887554e-237</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2015,8 +2203,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.362494</td>
-      <td>0.281493</td>
-      <td>2.844927e-187</td>
+      <td>0.253944</td>
+      <td>2.887554e-237</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2032,8 +2220,8 @@ annotations[501]
       <td>None</td>
       <td>0.314538</td>
       <td>0.181247</td>
-      <td>0.060875</td>
-      <td>2.844927e-187</td>
+      <td>0.056432</td>
+      <td>2.887554e-237</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2049,8 +2237,8 @@ annotations[501]
       <td>None</td>
       <td>0.056386</td>
       <td>0.003143</td>
-      <td>0.000444</td>
-      <td>2.844927e-187</td>
+      <td>0.000000</td>
+      <td>2.887554e-237</td>
     </tr>
   </tbody>
 </table>
@@ -2148,7 +2336,19 @@ Bio
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2160,43 +2360,43 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
-      <td>C00763</td>
-      <td>C00431</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>C02265</td>
-      <td>C00079</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>C00183</td>
-      <td>C00407</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>C00079</td>
-      <td>C00082</td>
-    </tr>
-    <tr>
-      <th>4</th>
       <td>C00079</td>
       <td>C20807</td>
     </tr>
     <tr>
+      <th>1</th>
+      <td>C00079</td>
+      <td>C02265</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>C00079</td>
+      <td>C00082</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>C21092</td>
+      <td>C00407</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>C00763</td>
+      <td>C00431</td>
+    </tr>
+    <tr>
       <th>5</th>
+      <td>C00407</td>
+      <td>C00183</td>
+    </tr>
+    <tr>
+      <th>6</th>
       <td>C02486</td>
       <td>C00123</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>7</th>
       <td>C04368</td>
       <td>C00082</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>C00407</td>
-      <td>C21092</td>
     </tr>
   </tbody>
 </table>
@@ -2215,14 +2415,26 @@ Bio
 
     computing all possible biochemical connections
     considering the provided connections ...
-    6.1 seconds elapsed
+    3.5 seconds elapsed
 
 
 
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2234,63 +2446,63 @@ Bio
   <tbody>
     <tr>
       <th>0</th>
-      <td>C02237</td>
+      <td>C22141</td>
       <td>C16744</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>C02237</td>
+      <td>C22141</td>
       <td>C22140</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>C02237</td>
+      <td>C22141</td>
       <td>C05131</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>C16744</td>
       <td>C04281</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>C16744</td>
-      <td>C22141</td>
+      <td>C04281</td>
+      <td>C22140</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>C16744</td>
-      <td>C01879</td>
+      <td>C04281</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>C16744</td>
       <td>C04282</td>
+      <td>C16744</td>
     </tr>
     <tr>
       <th>7</th>
+      <td>C04282</td>
+      <td>C22140</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>C04282</td>
+      <td>C05131</td>
+    </tr>
+    <tr>
+      <th>9</th>
       <td>C16744</td>
       <td>C01877</td>
     </tr>
     <tr>
-      <th>8</th>
-      <td>C22140</td>
-      <td>C04281</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>C22140</td>
-      <td>C22141</td>
-    </tr>
-    <tr>
       <th>10</th>
-      <td>C22140</td>
+      <td>C16744</td>
       <td>C01879</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>C22140</td>
-      <td>C04282</td>
+      <td>C16744</td>
+      <td>C02237</td>
     </tr>
     <tr>
       <th>12</th>
@@ -2299,28 +2511,28 @@ Bio
     </tr>
     <tr>
       <th>13</th>
-      <td>C04281</td>
-      <td>C05131</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>C22141</td>
-      <td>C05131</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>C05131</td>
+      <td>C22140</td>
       <td>C01879</td>
     </tr>
     <tr>
-      <th>16</th>
+      <th>14</th>
+      <td>C22140</td>
+      <td>C02237</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>C01877</td>
       <td>C05131</td>
-      <td>C04282</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>C01879</td>
+      <td>C05131</td>
     </tr>
     <tr>
       <th>17</th>
       <td>C05131</td>
-      <td>C01877</td>
+      <td>C02237</td>
     </tr>
   </tbody>
 </table>
@@ -2380,11 +2592,11 @@ ipa.Gibbs_sampler_bio(df,annotations,Bio,noits=5000,delta_bio=0.1)
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:30<00:00, 162.45it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:21<00:00, 233.32it/s]
 
 
     parsing results ...
-    Done -  30.8 seconds elapsed
+    Done -  21.5 seconds elapsed
 
 
 As an example, the possible annotations for the feature associated with the id 992 is shown below.
@@ -2398,7 +2610,19 @@ annotations[992]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2434,7 +2658,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.531683</td>
-      <td>0.774000</td>
+      <td>0.769556</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2451,7 +2675,7 @@ annotations[992]
       <td>0.324512</td>
       <td>0.317559</td>
       <td>0.123241</td>
-      <td>0.178667</td>
+      <td>0.177778</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2468,7 +2692,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.317559</td>
       <td>0.265841</td>
-      <td>0.036222</td>
+      <td>0.038667</td>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2485,7 +2709,7 @@ annotations[992]
       <td>0.7</td>
       <td>0.047324</td>
       <td>0.079234</td>
-      <td>0.011111</td>
+      <td>0.014000</td>
       <td>0.0</td>
     </tr>
   </tbody>
@@ -2566,11 +2790,13 @@ ipa.Gibbs_sampler_bio_add(df,annotations,Bio,noits=5000,delta_bio=0.1,delta_add=
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:28<00:00, 175.56it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:22<00:00, 225.71it/s]
 
     parsing results ...
-    Done -  28.6 seconds elapsed
+    Done -  22.2 seconds elapsed
+
+
+    
 
 
 
@@ -2582,7 +2808,19 @@ annotations[1]
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -2618,8 +2856,8 @@ annotations[1]
       <td>0.999759</td>
       <td>0.318084</td>
       <td>0.543121</td>
-      <td>0.618</td>
-      <td>7.003899e-93</td>
+      <td>0.734000</td>
+      <td>2.289606e-213</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2635,8 +2873,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.304221</td>
-      <td>0.340</td>
-      <td>7.003899e-93</td>
+      <td>0.262222</td>
+      <td>2.289606e-213</td>
     </tr>
     <tr>
       <th>2</th>
@@ -2652,8 +2890,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.318084</td>
       <td>0.152110</td>
-      <td>0.042</td>
-      <td>7.003899e-93</td>
+      <td>0.003778</td>
+      <td>2.289606e-213</td>
     </tr>
     <tr>
       <th>3</th>
@@ -2669,8 +2907,8 @@ annotations[1]
       <td>0.7</td>
       <td>0.045748</td>
       <td>0.000548</td>
-      <td>0.000</td>
-      <td>7.003899e-93</td>
+      <td>0.000000</td>
+      <td>2.289606e-213</td>
     </tr>
   </tbody>
 </table>
@@ -2806,16 +3044,18 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    1.2 seconds elapsed
+    0.7 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:25<00:00, 193.44it/s]
-
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:18<00:00, 277.36it/s]
 
     parsing results ...
-    Done -  25.9 seconds elapsed
+    Done -  18.1 seconds elapsed
+
+
+    
 
 
 If instead one wants to use only the MS1 data and only consider the adducts connections in the Gibbs sampler, one should use the following:
@@ -2829,18 +3069,16 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,noits
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 information....
-    0.8 seconds elapsed
+    0.5 seconds elapsed
     computing posterior probabilities including adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:25<00:00, 192.32it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:17<00:00, 277.82it/s]
+
 
     parsing results ...
-    Done -  26.1 seconds elapsed
-
-
-    
+    Done -  18.1 seconds elapsed
 
 
 Or, if one wants to use both the MS1 and MS2 data and consider both adducts and biochemical connections in the Gibbs sampler, the following should be used.
@@ -2857,14 +3095,14 @@ annotations= ipa.simpleIPA(df,ionisation=1, DB=DB,adductsAll=adducts,ppm=3,dfMS2
     computing all adducts ....
     0.1 seconds elapsed
     annotating based on MS1 and MS2 information....
-    1.3 seconds elapsed
+    0.7 seconds elapsed
     computing posterior probabilities including biochemical and adducts connections
     initialising sampler ...
 
 
-    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:28<00:00, 177.00it/s]
+    Gibbs Sampler Progress Bar: 100%|██████████| 5000/5000 [00:22<00:00, 224.78it/s]
 
 
     parsing results ...
-    Done -  28.3 seconds elapsed
+    Done -  22.3 seconds elapsed
 

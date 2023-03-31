@@ -2357,16 +2357,16 @@ Bio=pd.read_csv('DB/allBio_connections.csv')
 
 Alternatively, the user can define their own biochemical connections.
 For example:
-*L-Proline C00148
-*L-Valine C00183
-*L-Phenylalanine C00079
-*L-Leucine C00123
-*5-Oxoproline C01879
-*Betaine C00719
-*Hordatine A C08307
-*L-Tyrosine C00082
-*D-Proline C00763
-*D-Phenylalanine C02265
+- L-Proline C00148
+- L-Valine C00183
+- L-Phenylalanine C00079
+- L-Leucine C00123
+- 5-Oxoproline C01879
+- Betaine C00719
+- Hordatine A C08307
+- L-Tyrosine C00082
+- D-Proline C00763
+- D-Phenylalanine C02265
 
 
 

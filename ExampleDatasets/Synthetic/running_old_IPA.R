@@ -1,4 +1,3 @@
-setwd('~/Desktop/ipaPy2-main/ExampleDatasets/Synthetic/')
 library(IPA)
 data("isotopes")
 dfPOS <- read.csv('positive_synth_dataset.csv', stringsAsFactors = F)

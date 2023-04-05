@@ -222,7 +222,7 @@ adducts.head()
 
 
 
-**2. MS$^1$ database file (required)**
+**2. MS^1 database file (required)**
 <br />
 The IPA method requires a pandas dataframe containing the database against which the annotation is performed.
 This dataframe must contain the following columns in this exact order (optional columns can have empty fields):

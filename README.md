@@ -1863,7 +1863,7 @@ annotations[90]
 
 
 In this case, the cosine similarity score for the annotation L-Proline M+H is not very high. Moreover, the retention time assigned to this feature is outside both retention time ranges reported in the database for L-Proline and 3-Acetamidopropanal. Therefore, the most likely annotation for this feature is D-Proline M+H, the one annotation not rejected directly by the available evidence.
-It should be noted that the fragmentation pattern score has a rather weak effect on the posterior probability associated with L-Proline given how close it is to the fragmentation pattern score associated features not having MS2 info in the database (CSunk=0.7). The main reason why the D-Proline annotation appears to be the most likely is due to the fact that the retention time associated to this feature (63.45 s) is outside the retention time ranges associated with L-Proline and 3-Acetamidopropanal.
+It should be noted that the fragmentation pattern score has a rather weak effect on the posterior probability associated with L-Proline, given how close it is to the fragmentation pattern score associated features that do not have MS2 info in the database (CSunk=0.7). The main reason why the D-Proline annotation appears to be the most likely is due to the fact that the retention time associated to this feature (63.45 s) is outside the retention time ranges associated with L-Proline and 3-Acetamidopropanal.
 
 **5. Computing posterior probabilities integrating adducts connections**
 

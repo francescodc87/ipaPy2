@@ -14,7 +14,7 @@ setup(
           'molmass==2021.6.18',
           'scipy==1.8.1',
           'tqdm==4.64.0'],
-    setup_requires = ['pytest-runner'],
+    setup_requires = [],
     tests_require= ['pytest==4.4.1'],
     test_suite='test'
 )

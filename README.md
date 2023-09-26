@@ -6,10 +6,16 @@ isotope patterns and adduct formation.
 ## Installation
 ipaPy2 requires Python 3.9 or higher
 
-### Install via pip (recommended )
+### Install via pip (recommended)
 
 ```
 pip install ipaPy2
+```
+
+### Install via bioconda
+
+```
+conda install ipaPy2
 ```
 
 ### Compiling from source (macOS)

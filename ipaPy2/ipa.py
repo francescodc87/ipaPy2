@@ -13,6 +13,8 @@ from functools import partial
 from tqdm import tqdm
 from ipaPy2 import util
 from ipaPy2 import iterations
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "Francesco Del Carratore"
 __maintainer__ = "Francesco Del Carratore"

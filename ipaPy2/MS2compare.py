@@ -3,6 +3,8 @@ import pandas
 import numpy
 import math
 import statistics
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "Francesco Del Carratore, Juraj Borka"
 __maintainer__ = "Francesco Del Carratore"

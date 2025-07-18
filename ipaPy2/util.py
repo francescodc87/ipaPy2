@@ -1,5 +1,7 @@
 import pandas
 import unicodedata
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "Francesco Del Carratore"
 __maintainer__ = "Francesco Del Carratore"

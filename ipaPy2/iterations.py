@@ -6,6 +6,8 @@ import math
 import random
 from ipaPy2 import MS2compare
 from ipaPy2 import util
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 __author__ = "Francesco Del Carratore"
 __maintainer__ = "Francesco Del Carratore"
@@ -70,7 +72,7 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
         tmp['prior'] = [None]*len(hits)
         tmp['post'] = [None]*len(hits)
         uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],
                        'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[None],'post':[None]})
         tmp=pandas.concat([tmp,uk])
@@ -149,7 +151,7 @@ def MS1_ann_iter(df,allAdds,ppm,me,ppmthr,ppmunk,ratiounk,pRTNone,pRTout,sigmaln
         tmp = tmp.sort_values(by=['post'], ascending=False)
     else:
         tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[1],'post':[1]})
     tmp.index=range(0,len(tmp.index))    
     return(tmp)
@@ -176,7 +178,7 @@ def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
         tmp['prior'] = [None]*len(hits)
         tmp['post'] = [None]*len(hits)
         uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],
                        'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[None],'post':[None]})
         tmp=pandas.concat([tmp,uk])
@@ -288,7 +290,7 @@ def MSMS_ann_iter1(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
             
     else:
         tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[1],'post':[1]})
     tmp.index=range(0,len(tmp.index)) 
     return(tmp)
@@ -316,7 +318,7 @@ def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
         tmp['prior'] = [None]*len(hits)
         tmp['post'] = [None]*len(hits)
         uk = pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],
                        'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[None],'post':[None]})
         tmp=pandas.concat([tmp,uk])
@@ -428,7 +430,7 @@ def MSMS_ann_iter2(df,dfMS2,allAdds,DBMS2,ppm,me,ratiosd,ppmthr,ppmunk,ratiounk,
             
     else:
         tmp=pandas.DataFrame({'id':["Unknown"],'name':["Unknown"],'formula':[None],'adduct':[None],'m/z':[None],
-                       'charge':[None],'RT range':[None],'ppm':[ppm],'isotope pattern score':[None],
+                       'charge':[None],'RT range':[None],'ppm':[ppmunk],'isotope pattern score':[None],
                        'fragmentation pattern score':[None],'prior':[1],'post':[1]})
     tmp.index=range(0,len(tmp.index)) 
     return(tmp)

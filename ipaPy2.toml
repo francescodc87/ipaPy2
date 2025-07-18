@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ipaPy2"
+version = "1.4.0"
+authors = [
+  { name="Dr Francesco Del Carratore", email="francescodc87@gmail.com" },
+  { name="Juraj Borka"}
+]
+description = "Integrated Probabilistic Annotation (IPA) 2.0 - Python implementation"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    'pandas',
+    'molmass==2021.6.18',
+    'scipy>=1.8',
+    'tqdm==4.64.0']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/francescodc87/ipaPy2"
+Issues = "https://github.com/francescodc87/ipaPy2/issues"
+
+
